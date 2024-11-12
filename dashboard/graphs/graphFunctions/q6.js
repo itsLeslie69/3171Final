@@ -59,6 +59,20 @@ export default function getGraph6 () {
         graphGroup.append('g')
                     .call(yAxis)
 
+        // Labels
+        graphGroup.append("text")
+        .attr("class", "axis-label")
+        .attr("x", innerWidth / 2)
+        .attr("y", 440)
+        .attr("text-anchor", "middle")
+        .text("Passenger ID");
+
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("text-anchor", "middle")
+            .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
+            .text("Total Ticket(s) Cost");           
+
         // Graphing data
         graphGroup.append('g')
             .selectAll('g')

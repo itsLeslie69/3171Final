@@ -7,6 +7,7 @@
     <title>Dashboard</title>
 </head>
 <body>
+
     <div class="contentContainer grid grid-cols-11  w-full p-5">
         <!--1st Row-->
         <div></div>
@@ -33,7 +34,9 @@
         <div id="q5Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
         <div id="q6Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
         <div></div>
-<!--         <div id="q3Container">
+        <!--3rd Row-->
+        <div></div>
+        <div id="q3Container" class="col-start-5 col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2">
             <select name="graphs" id="dropDown">
                 <option value="select">Select Graph</option>
                 <option value="checkIn">Check-in</option>
@@ -42,7 +45,9 @@
                 <option value="onBoardService">On-Board Service</option>
                 <option value="baggageHandling">Baggage Handling</option>
             </select>
-        </div> -->
+        </div>
+
+        
     </div>
 </body>
 </html>
@@ -54,15 +59,15 @@
     import returnLoyalCustomers from "./graphs/singleFigures/q7.js"
     import returnTotalFlightDist from "./graphs/singleFigures/q8.js"
     import returnNoDelayCust from "./graphs/singleFigures/q9.js"
-
     
-    // Graphs
+    // Graphs are JS files that simply append the appropriate graph
+    // to a selected div with an ID for that graph
     import getGraph2 from "./graphs/graphFunctions/q2.js"
     import getGraph3 from "./graphs/graphFunctions/q3.js"
     import getGraph4 from "./graphs/graphFunctions/q4.js"
     import getGraph5 from "./graphs/graphFunctions/q5.js"
     import getGraph6 from "./graphs/graphFunctions/q6.js"
-
+    
     var loyalNum = await returnLoyalCustomers()
     var totalDistFlown = await returnTotalFlightDist()
     var noDelayNum = await returnNoDelayCust()
@@ -72,7 +77,7 @@
     appendSingleFigure('q9Container', noDelayNum)
 
     getGraph2()
-    //getGraph3()
+    getGraph3()
     getGraph4()
     getGraph5()
     getGraph6()

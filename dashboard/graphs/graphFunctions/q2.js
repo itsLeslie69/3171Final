@@ -17,7 +17,7 @@ d3.select('#pieOne')
     .attr("x", width / 2)
     .attr("y", 20)
     .attr("text-anchor", "middle")
-    .text("Proportion of satisfied/neutral or unsatisfied customers");
+    .text("Proportion of satisfied/neutral or unsatisfied customers")
 
 d3.csv('../data/customer_satisfaction.csv').then((data) => {           
     // Filter method returns an array of objects according to a set condition
@@ -60,14 +60,39 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
     innerG.append('path')
     .attr('d', arc) // Drawn path element dimensions are equal to the defined circular geometry above
     .attr('fill', (d, i) => color[i])
+    .attr('class', 'piePath')
+    
+    // tooltip
+    d3.selectAll('.piePath')
+        .on('mouseover', function (event, d) {
+            //console.log(d.data.value)
+           if (d.data.value == parseInt(46)) { // Make check dynamic?
+                mainG.append('text')
+                .attr("class", "toolTip")
+                .attr("x", -160)
+                .attr("y", 180)
+                .attr("text-anchor", "middle")
+                .text(d.data.value + "%");
+            } else if (d.data.value == parseInt(53)) {
+                mainG.append('text')
+                .attr("class", "toolTip")
+                .attr("x", 160)
+                .attr("y", 180)
+                .attr("text-anchor", "middle")
+                .text(d.data.value + "%");
+            }
+        })
+        .on('mouseout', function () {
+            d3.selectAll('.toolTip').remove();
+        });
 
     // Creating labels for the names and values
     // Positioning based off geometry
 
-    innerG.append('text')
+/*     innerG.append('text')
     .text(d => d.value + "%")
     .attr('x', d=> arc.centroid(d)[0] + 5)
-    .attr('y', d=> arc.centroid(d)[1] - 150)
+    .attr('y', d=> arc.centroid(d)[1] - 150) */
 
     // Legend
     const legend = svg.append("g")
@@ -88,6 +113,7 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
             .attr("y", 12)
             .text(s);
     });
-    
+
+
 })
 }

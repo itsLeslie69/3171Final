@@ -10,7 +10,6 @@ import returnBaggageHandling from "./q3Functions/booking.js"
 
 export default async function getGraph3 () {
 
-
     var checkInData = await returnCheckIn()
     var bookingData = await returnBooking()
     var gateData = await returnGateLocation()
@@ -20,7 +19,7 @@ export default async function getGraph3 () {
     var select = document.getElementById('dropDown')
 
     // Defining chart dimensions
-    var width = 1000
+    var width = 500
     var height = 500
 
     var padding = 100
@@ -28,6 +27,8 @@ export default async function getGraph3 () {
 
     var innerWidth = width - padding
     var innerHeight = height - padding
+
+    var color = ["#F58634", "#54433A"]
 
     // Appending svg
     var graph = d3.select('#q3Container')
@@ -66,6 +67,29 @@ export default async function getGraph3 () {
                     .attr('class', 'yAxis')
                     .call(yAxis)
 
+
+        // Labels
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("x", innerWidth / 2)
+            .attr("y", 440)
+            .attr("text-anchor", "middle")
+            .text("Reported Level of Satisfaction");
+
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("text-anchor", "middle")
+            .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
+            .text("Number of Respondents");      
+            
+        //Title
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("x", innerWidth / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            .text("Reported Satisfaction By Category");
+
         select.onchange = function (e) {
             console.log(e.target.selectedIndex)
             resetGraph()
@@ -92,6 +116,50 @@ export default async function getGraph3 () {
                     .attr('y', (d) => { return yScale(d.value) })
                     .attr('width', xScale.bandwidth())
                     .attr('height', (d) => { return innerHeight - yScale(d.value) })
+                    .attr("fill", (d, i) => color[i % color.length])
+                    .on('mouseover', function (event, d) {
+                        console.log('mouse over bar!')
+                        console.log(d)
+                        if (d.ranking == 1) {
+                            graphGroup.append('text')
+                                .attr("class", "toolTip")
+                                .attr("x", xScale(parseInt(d.ranking)) + 30)
+                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
+                                .attr("text-anchor", "middle")
+                                .text(d.value);
+                        } else if (d.ranking == 2) {
+                            graphGroup.append('text')
+                                .attr("class", "toolTip")
+                                .attr("x", xScale(parseInt(d.ranking)) + 30)
+                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
+                                .attr("text-anchor", "middle")
+                                .text(d.value);
+                        } else if (d.ranking == 3) {
+                            graphGroup.append('text')
+                                .attr("class", "toolTip")
+                                .attr("x", xScale(parseInt(d.ranking)) + 30)
+                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
+                                .attr("text-anchor", "middle")
+                                .text(d.value);
+                        } else if (d.ranking == 4) {
+                            graphGroup.append('text')
+                                .attr("class", "toolTip")
+                                .attr("x", xScale(parseInt(d.ranking)) + 30)
+                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
+                                .attr("text-anchor", "middle")
+                                .text(d.value);
+                        } else if (d.ranking == 5) {
+                            graphGroup.append('text')
+                                .attr("class", "toolTip")
+                                .attr("x", xScale(parseInt(d.ranking)) + 30)
+                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
+                                .attr("text-anchor", "middle")
+                                .text(d.value);
+                        }
+                    })
+                    .on('mouseout', function () {
+                        d3.selectAll('.toolTip').remove();
+                    });
         }
 
     })

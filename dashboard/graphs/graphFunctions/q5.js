@@ -103,11 +103,34 @@ export default function getGraph5 () {
    
            graphGroup.append('g')
                        .call(yAxis)
+
+            // Labels
+            graphGroup.append("text")
+                .attr("class", "axis-label")
+                .attr("x", innerWidth / 2)
+                .attr("y", 440)
+                .attr("text-anchor", "middle")
+                .text("Class Flown");
+
+           graphGroup.append("text")
+                .attr("class", "axis-label")
+                .attr("text-anchor", "middle")
+                .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
+                .text("Passenger Satisfaction");      
+                
+            //Title
+            graphGroup.append("text")
+                .attr("class", "axis-label")
+                .attr("x", innerWidth / 2)
+                .attr("y", -30)
+                .attr("text-anchor", "middle")
+                .text("Passenger Satisfaction by Class");
    
-           var graph = graphGroup.selectAll('.graph')
+           var graph = graphGroup.selectAll('.gBar')
                                    .data(graphData)
                                    .enter()
                                    .append('g')
+                                        .attr('class', 'gBar')
            
            graph.append("rect")
                    .attr('class', 'bar')
@@ -116,5 +139,35 @@ export default function getGraph5 () {
                    .attr('width', xScale.bandwidth())
                    .attr('height', (z) => { return innerHeight - yScale(z[1]) })
                    .attr("fill", (d, i) => color[i % color.length])
+                    .on('mouseover', function (event, d) {
+                        console.log('mouse over bar!')
+                        if (d[0] == "Eco") {
+                            graphGroup.append('text')
+                                .attr("class", "toolTip")
+                                .attr("x", 75)
+                                .attr("y", 120)
+                                .attr("text-anchor", "middle")
+                                .text(d[1].toFixed(2));
+                        } else if (d[0] == "Business") {
+                            graphGroup.append('text')
+                            .attr("class", "toolTip")
+                            .attr("x", 200)
+                            .attr("y", 90)
+                            .attr("text-anchor", "middle")
+                            .text(d[1].toFixed(2));
+                        } else if (d[0] == "Eco Plus") {
+                            graphGroup.append('text')
+                            .attr("class", "toolTip")
+                            .attr("x", 325)
+                            .attr("y", 150)
+                            .attr("text-anchor", "middle")
+                            .text(d[1].toFixed(2));
+                        }
+                    
+                    })
+                    .on('mouseout', function () {
+                        d3.selectAll('.toolTip').remove();
+                    });
                })   
+              
 }

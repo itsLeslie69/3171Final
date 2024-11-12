@@ -90,7 +90,47 @@ export default function getGraph4 () {
                .attr("x", d => x(d.data["Convenience Level"]))
                .attr("y", d => y(d[1]))
                .attr("height", d => y(d[0]) - y(d[1]))
-               .attr("width", x.bandwidth());
+               .attr("width", x.bandwidth())
+               .on('mouseover', function (event, d) {
+                    //console.log('mouse over q4!')
+                    console.log(d)
+                    if (d.data["Convenience Level"] == 4) {
+                        svg.append('text')
+                        .attr("class", "toolTip")
+                        .attr("x", 160)
+                        .attr("y", height - (height / 3) - 90)
+                        .attr("text-anchor", "middle")
+                        .text("Level: " + d.data['Convenience Level'])
+
+                        svg.append('text')
+                        .attr("class", "toolTip")
+                        .attr("x", 182)
+                        .attr("y", height - (height / 3) - 60)
+                        .attr("text-anchor", "middle")
+                        .text("Low Delay: " + d.data['Low Delay'])
+                        .style('fill', "#F58634")
+
+                        svg.append('text')
+                        .attr("class", "toolTip")
+                        .attr("x", 205)
+                        .attr("y", height - (height / 3) - 30)
+                        .attr("text-anchor", "middle")
+                        .text("Moderate Delay: " + d.data['Moderate Delay'])
+                        .style('fill', "#54433A")
+
+                        svg.append('text')
+                        .attr("class", "toolTip")
+                        .attr("x", 188)
+                        .attr("y", height - (height / 3))
+                        .attr("text-anchor", "middle")
+                        .text("High Delay: " + d.data['High Delay'])
+                        .style('fill', "#008970")
+                    }
+               })
+               .on('mouseout', function () {
+                    d3.selectAll('.toolTip').remove();
+                })
+               
 
            // Labels
            svg.append("text")
