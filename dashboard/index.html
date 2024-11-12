@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/src/output.css">
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="contentContainer grid grid-cols-11  w-full p-5">
+        <!--1st Row-->
+        <div></div>
+        <div class="col-span-3 flex flex-col justify-between items-center gap-5 p-5 bg-gray-300 rounded-lg w-[90%] m-2">
+            <h2>Outline</h2>
+            <div id="q7Container" class="bg-gray-400 rounded-lg w-[90%] text-center p-16">
+                <p id="q7Figure">0</p>
+            </div>
+            <div id="q8Container" class="bg-gray-400 rounded-lg w-[90%] text-center p-16">
+                <p id="q8Figure">0</p>
+            </div>
+            <div id="q9Container" class="bg-gray-400 rounded-lg w-[90%] text-center p-16">
+                <p id="q9Figure">0</p>
+            </div>
+        </div>
+        <div id="q1Container" class="col-span-3 ">
+            <p class="">Chart 1 Here</p>
+        </div>
+        <div id="q2Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+        <div></div>
+        <!--2nd Row-->
+        <div></div>
+        <div id="q4Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+        <div id="q5Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+        <div id="q6Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+        <div></div>
+<!--         <div id="q3Container">
+            <select name="graphs" id="dropDown">
+                <option value="select">Select Graph</option>
+                <option value="checkIn">Check-in</option>
+                <option value="booking">Ease of Booking</option>
+                <option value="gateLocation">Gate Location</option>
+                <option value="onBoardService">On-Board Service</option>
+                <option value="baggageHandling">Baggage Handling</option>
+            </select>
+        </div> -->
+    </div>
+</body>
+</html>
+<script type="module">
+    // Imports
+    // Helper Functions
+    import appendSingleFigure from "./utilities/appendSingleFigure.js"
+    // Single Figures
+    import returnLoyalCustomers from "./graphs/singleFigures/q7.js"
+    import returnTotalFlightDist from "./graphs/singleFigures/q8.js"
+    import returnNoDelayCust from "./graphs/singleFigures/q9.js"
+
+    
+    // Graphs
+    import getGraph2 from "./graphs/graphFunctions/q2.js"
+    import getGraph3 from "./graphs/graphFunctions/q3.js"
+    import getGraph4 from "./graphs/graphFunctions/q4.js"
+    import getGraph5 from "./graphs/graphFunctions/q5.js"
+    import getGraph6 from "./graphs/graphFunctions/q6.js"
+
+    var loyalNum = await returnLoyalCustomers()
+    var totalDistFlown = await returnTotalFlightDist()
+    var noDelayNum = await returnNoDelayCust()
+
+    appendSingleFigure('q7Container', loyalNum)
+    appendSingleFigure('q8Container', totalDistFlown)
+    appendSingleFigure('q9Container', noDelayNum)
+
+    getGraph2()
+    //getGraph3()
+    getGraph4()
+    getGraph5()
+    getGraph6()
+
+
+</script>

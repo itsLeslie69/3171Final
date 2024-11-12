@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, a, p {
+    font-family: Verdana;
+}
+
+h1 {
+    font-size: 3rem /* 48px */;
+    line-height: 1;
+}
+
+h2 {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+h3 {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+h4 {
+    font-size: 1.5rem
+}
+
+p.alert-p-content {
+    font-size: 0.8rem;
+}
+
+p, a {
+    font-size: 1rem;
+}
+
+td, tr {
+    padding: 2%;
+}
+
+tr {
+    border-bottom: 1px black solid;
+}
+
+/* Custom Styles */
+
