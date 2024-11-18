@@ -1,4 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import { appendPieChartToolTip } from "../../utilities/toolTips.js";
 
 export default function getGraph2 () {
     // Defining chart dimensions
@@ -60,39 +61,31 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
     innerG.append('path')
     .attr('d', arc) // Drawn path element dimensions are equal to the defined circular geometry above
     .attr('fill', (d, i) => color[i])
-    .attr('class', 'piePath')
+    .attr('id', 'piePath')
+    .attr('class', function (d, i) {
+        return "_" + color[i].slice(1)
+    })
     
     // tooltip
-    d3.selectAll('.piePath')
+    d3.selectAll('#piePath')
         .on('mouseover', function (event, d) {
-            //console.log(d.data.value)
-           if (d.data.value == parseInt(46)) { // Make check dynamic?
-                mainG.append('text')
-                .attr("class", "toolTip")
-                .attr("x", -160)
-                .attr("y", 180)
-                .attr("text-anchor", "middle")
-                .text(d.data.value + "%");
-            } else if (d.data.value == parseInt(53)) {
-                mainG.append('text')
-                .attr("class", "toolTip")
-                .attr("x", 160)
-                .attr("y", 180)
-                .attr("text-anchor", "middle")
-                .text(d.data.value + "%");
-            }
+            //console.log(d.data.value)3.
+            // mainG, 500, -160, d, [], "", 320, 180
+            appendPieChartToolTip (
+                mainG, 
+                500, 
+                -190, 
+                d, 
+                [], 
+                d.data.value + "%", 
+                220, 
+                90
+            )
         })
         .on('mouseout', function () {
             d3.selectAll('.toolTip').remove();
         });
 
-    // Creating labels for the names and values
-    // Positioning based off geometry
-
-/*     innerG.append('text')
-    .text(d => d.value + "%")
-    .attr('x', d=> arc.centroid(d)[0] + 5)
-    .attr('y', d=> arc.centroid(d)[1] - 150) */
 
     // Legend
     const legend = svg.append("g")
@@ -101,7 +94,16 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
 
     ["Satisfied", "Unsatisifed/Neutral"].forEach((s, v) => {
         const legendRow = legend.append("g")
-            .attr("transform", `translate(0, ${v * 20})`);
+            .attr("transform", `translate(0, ${v * 20})`)
+            .on('mouseover', function () {
+                d3.select('#pieOne').selectAll('.' + '_' + color[v].slice(1)).transition()
+                .duration(50)
+                .style('opacity', 1)
+            }).on('mouseout', function () {
+                d3.select('#pieOne').selectAll('.' + '_' + color[v].slice(1)).transition()
+                .duration(50)
+                .style('opacity', 0.8)
+            })
 
         legendRow.append("rect")
             .attr("width", 15)

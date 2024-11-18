@@ -1,11 +1,11 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
 
 export default function getGraph6 () {
     var width = 500 // 1000
     var height = 500
 
     var padding = 100
-    var barWidth = 15
 
     var innerWidth = width - padding
     var innerHeight = height - padding
@@ -26,7 +26,7 @@ export default function getGraph6 () {
     .attr("x", width / 2)
     .attr("y", 20)
     .attr("text-anchor", "middle")
-    .text("First 15 Disloyal ustomers 4 ticket prices");
+    .text("First 15 Disloyal Customers 4 ticket prices");
 
     // Appending group container to svg
     var graphGroup = graph.append('g')
@@ -94,7 +94,26 @@ export default function getGraph6 () {
             .attr('y', d => yScale(d.price))          // Set y position based on the price
             .attr('width', xScale.bandwidth())// Set width
             .attr('height', d => innerHeight - yScale(d.price)) // Set height
-            .attr('fill', (d, i) => color[i]); // Colour
+            .attr('fill', (d, i) => color[i]) // Colour
+            .attr('class', function (d, i) {
+                return "_" + color[i].slice(1)
+            })
+            .on('mouseover', function (event, d) {
+                //console.log('mouse over 6')
+                console.log(d)
+                appendStackedBarToolTip (
+                    graph, 
+                    500, 
+                    (parseInt(d.id) * 25) + 100, 
+                    d, 
+                    [], 
+                    6, 
+                    "$" + Number(d.price).toFixed(0), 
+                    25
+                )
+            }).on('mouseout', function () {
+                d3.selectAll('.toolTip').remove()
+            })
 
         // Legend
         const legend = graphGroup.append("g")
@@ -103,7 +122,16 @@ export default function getGraph6 () {
 
         ["1st Ticket Price", "2nd Ticket Price", "3rd Ticket Price", "4th Ticket Price"].forEach((s, v) => {
             const legendRow = legend.append("g")
-                .attr("transform", `translate(0, ${v * 20})`);
+                .attr("transform", `translate(0, ${v * 20})`)
+                .on('mouseover', function () {
+                    d3.select('#q6SVG').selectAll('.' + '_' + color[v].slice(1)).transition()
+                        .duration(50)
+                        .style('opacity', 1)
+                }).on('mouseout', function () {
+                    d3.select('#q6SVG').selectAll('.' + '_' + color[v].slice(1)).transition()
+                    .duration(50)
+                    .style('opacity', 0.8)
+                })
 
             legendRow.append("rect")
                 .attr("width", 15)

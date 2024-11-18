@@ -574,16 +574,16 @@ video {
   display: grid;
 }
 
-.hidden {
-  display: none;
-}
-
 .w-\[90\%\] {
   width: 90%;
 }
 
 .w-full {
   width: 100%;
+}
+
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .grid-cols-11 {
@@ -647,6 +647,18 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 body {
   overflow-x: hidden;
 }
@@ -690,17 +702,53 @@ tr {
   border-bottom: 1px black solid;
 }
 
+/* Base Rect styles */
+
+rect {
+  opacity: 0.8;
+  transition: 0.3s;
+}
+
+rect:hover {
+  opacity: 1;
+}
+
+/* Base path styles */
+
+path {
+  opacity: 0.8;
+  transition: 0.3s;
+}
+
+path:hover {
+  opacity: 1;
+}
+
 /* Tooltip styles */
 
-#tooltip {
-  position: absolute;
-  width: 200px;
-  height: auto;
-  padding: 10px;
-  background-color: indigo;
-  pointer-events: none;
+.toolTipBackground {
+  background-color: #36454F;
+  border-radius: 10px;
+  padding: 5%;
 }
 
-#tooltip.hidden {
-  display: none;
+.toolTipTitle {
+  color: white;
+  text-align: center;
+  font-weight: 400;
+  font-size: 1.5rem;
 }
+
+.toolTipText {
+  color: white;
+  text-align: left;
+  margin-left: 5%;
+  font-size: 1rem;
+}
+
+.tipSingleValue {
+  text-align: center;
+  color: white;
+  font-size: 1rem;
+}
+

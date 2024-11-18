@@ -45,19 +45,55 @@ tr {
     border-bottom: 1px black solid;
 }
 
+
+/* Base Rect styles */
+
+rect {
+    opacity: 0.8;
+    transition: 0.3s;
+}
+
+rect:hover {
+    opacity: 1;
+}
+
+/* Base path styles */
+
+path {
+    opacity: 0.8;
+    transition: 0.3s;
+}
+
+path:hover {
+    opacity: 1;
+}
+
+
 /* Tooltip styles */
 
-#tooltip {
-    position: absolute;
-    width: 200px;
-    height: auto;
-    padding: 10px;
-    background-color: indigo;
-    pointer-events: none;
-
+.toolTipBackground {
+    background-color: #36454F;
+    border-radius: 10px;
+    padding: 5%;
 }
 
-#tooltip.hidden {
-    display: none;
-
+.toolTipTitle {
+    color: white;
+    text-align: center;
+    font-weight: 400;
+    font-size: 1.5rem;
 }
+
+.toolTipText {
+    color: white;
+    text-align: left;
+    margin-left: 5%;
+    font-size: 1rem;
+}
+
+.tipSingleValue {
+    text-align: center;
+    color: white;
+    font-size: 1rem;
+}
+

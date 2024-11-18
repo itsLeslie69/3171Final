@@ -1,4 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
 
 export default function getGraph5 () {
            // Defining chart dimensions
@@ -64,7 +65,7 @@ export default function getGraph5 () {
                    tempTotal += parseFloat(arr[i])
                    
                }
-               console.log(tempTotal/(Number(arr.length) - 1))
+               //console.log(tempTotal/(Number(arr.length) - 1))
                return (tempTotal/(Number(arr.length) - 1))
            }
    
@@ -79,7 +80,7 @@ export default function getGraph5 () {
                graphData[i].push(calculateAvg(groupedData[i].slice(1)))    // Sliced array returns all numberical values after the sub-array class name
            }                                                               // calculateAvg is used to process the returned array at the matching index (seat class)
                                                                            // Final averages pushed to graphData
-           console.log(graphData)
+           //console.log(graphData)
            // Array now structured as [] => ['Eco, 3.12'] etc
    
            // x-axis scale
@@ -140,30 +141,22 @@ export default function getGraph5 () {
                    .attr('height', (z) => { return innerHeight - yScale(z[1]) })
                    .attr("fill", (d, i) => color[i % color.length])
                     .on('mouseover', function (event, d) {
-                        console.log('mouse over bar!')
-                        if (d[0] == "Eco") {
-                            graphGroup.append('text')
-                                .attr("class", "toolTip")
-                                .attr("x", 75)
-                                .attr("y", 120)
-                                .attr("text-anchor", "middle")
-                                .text(d[1].toFixed(2));
-                        } else if (d[0] == "Business") {
-                            graphGroup.append('text')
-                            .attr("class", "toolTip")
-                            .attr("x", 200)
-                            .attr("y", 90)
-                            .attr("text-anchor", "middle")
-                            .text(d[1].toFixed(2));
-                        } else if (d[0] == "Eco Plus") {
-                            graphGroup.append('text')
-                            .attr("class", "toolTip")
-                            .attr("x", 325)
-                            .attr("y", 150)
-                            .attr("text-anchor", "middle")
-                            .text(d[1].toFixed(2));
-                        }
-                    
+                        appendStackedBarToolTip (
+                            graphGroup, 
+                            500, 
+                            75, 
+                            d, 
+                            [],
+                            0,
+                            d[1].toFixed(2), 
+                            65, 
+                            ["Eco", "Business", "Eco Plus"],
+                            50
+                        )
+                        
+                        
+                            
+                        
                     })
                     .on('mouseout', function () {
                         d3.selectAll('.toolTip').remove();

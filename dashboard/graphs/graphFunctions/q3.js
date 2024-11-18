@@ -1,4 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
 
 import resetGraph from "./q3Functions/reset.js"
 
@@ -80,7 +81,7 @@ export default async function getGraph3 () {
             .attr("class", "axis-label")
             .attr("text-anchor", "middle")
             .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
-            .text("Number of Respondents");      
+            .text("Number of Respondents (n)");      
             
         //Title
         graphGroup.append("text")
@@ -118,44 +119,21 @@ export default async function getGraph3 () {
                     .attr('height', (d) => { return innerHeight - yScale(d.value) })
                     .attr("fill", (d, i) => color[i % color.length])
                     .on('mouseover', function (event, d) {
-                        console.log('mouse over bar!')
+                        console.log('mouse over bar 3!')
                         console.log(d)
-                        if (d.ranking == 1) {
-                            graphGroup.append('text')
-                                .attr("class", "toolTip")
-                                .attr("x", xScale(parseInt(d.ranking)) + 30)
-                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
-                                .attr("text-anchor", "middle")
-                                .text(d.value);
-                        } else if (d.ranking == 2) {
-                            graphGroup.append('text')
-                                .attr("class", "toolTip")
-                                .attr("x", xScale(parseInt(d.ranking)) + 30)
-                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
-                                .attr("text-anchor", "middle")
-                                .text(d.value);
-                        } else if (d.ranking == 3) {
-                            graphGroup.append('text')
-                                .attr("class", "toolTip")
-                                .attr("x", xScale(parseInt(d.ranking)) + 30)
-                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
-                                .attr("text-anchor", "middle")
-                                .text(d.value);
-                        } else if (d.ranking == 4) {
-                            graphGroup.append('text')
-                                .attr("class", "toolTip")
-                                .attr("x", xScale(parseInt(d.ranking)) + 30)
-                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
-                                .attr("text-anchor", "middle")
-                                .text(d.value);
-                        } else if (d.ranking == 5) {
-                            graphGroup.append('text')
-                                .attr("class", "toolTip")
-                                .attr("x", xScale(parseInt(d.ranking)) + 30)
-                                .attr("y", (innerHeight / 2) - (d.value / 2) - 150)
-                                .attr("text-anchor", "middle")
-                                .text(d.value);
-                        }
+                        // graphGroup, 500, xScale(parseInt(d.ranking)) + 30, d, [], 0, "value", 0, []
+                        appendStackedBarToolTip (
+                            graphGroup, 
+                            500, 
+                            xScale(parseInt(d.ranking)) + 15, 
+                            d, 
+                            [], 
+                            3, 
+                            "n = " + d.value,
+                            90,
+                            [],
+                            (innerHeight / 2) - (d.value / 2) - 130
+                        )
                     })
                     .on('mouseout', function () {
                         d3.selectAll('.toolTip').remove();
