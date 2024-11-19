@@ -68,6 +68,13 @@ path:hover {
     opacity: 1;
 }
 
+/* Selection styles */
+
+.selected {
+    opacity: 1;
+    transition: 0.3s;
+    fill: purple; /* For testing only, delete later */
+}
 
 /* Tooltip styles */
 
@@ -96,4 +103,6 @@ path:hover {
     color: white;
     font-size: 1rem;
 }
+
+
 

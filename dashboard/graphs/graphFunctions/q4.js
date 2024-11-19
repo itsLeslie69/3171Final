@@ -13,12 +13,11 @@ export default function getGraph4 () {
 
        var color = ["#54433A", "#F58634", "#008970", "#00C0A3"]
 
-
         // Add SVG
         var svg = d3.select("#q4Container").append("svg")
         .attr("width", width)
         .attr("height", height)
-        .attr('id', 'pieContainer')
+        .attr('id', 'q4SVG')
 
         var graphGroup = svg.append('g')
             .attr("transform", "translate(50, 50)")
@@ -44,7 +43,7 @@ export default function getGraph4 () {
 
         // Convert the grouped data object into an array
         const result = Object.values(groupedData)
-        console.log(result)
+        //console.log(result)
         
         var xScale = d3.scaleBand()
                         .domain(result.map(d => d.group))
@@ -80,12 +79,39 @@ export default function getGraph4 () {
                 .attr('width', xScale.bandwidth())
                 .attr('height', (d) => { return innerHeight - yScale(Number(d.totalDelay)) })
                 .attr('fill', (d, i) => color[i % color.length])
+                .attr('class', 'bar')
                 .on('mouseover', function (event, d) {
                     appendStackedBarToolTip (graphGroup, innerHeight, this.x.baseVal.value + 10, d, [], 3, d.totalDelay, 0, [], 0)  
                 })
                .on('mouseout', function () {
                     d3.selectAll('.toolTip').remove()
                 })
+
+        // Brush handler functions
+        function updateChart (event) {
+            var selection = event.selection
+
+            d3.select('#q4SVG').selectAll('.bar').classed("selected", function (d) {
+                console.log(d)
+                return isBrushed (selection, xScale(d.group) + 50, yScale(Number(d.totalDelay)) + 50)
+            })
+
+        }
+
+        function isBrushed (edge, x, y) {
+            var x0 = edge[0][0],
+                x1 = edge[1][0],
+                y0 = edge[0][1],
+                y1 = edge[1][1]
+                return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
+        }
+
+        // Calling brush
+        svg.call(
+            d3.brush()
+                .extent([[0, 0], [500, 500]])
+                .on('start brush', updateChart)
+        )    
 
             // Graph title
             d3.select('#pieContainer')

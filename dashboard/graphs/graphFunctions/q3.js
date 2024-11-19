@@ -36,6 +36,7 @@ export default async function getGraph3 () {
                     .append('svg')
                     .attr('height', height)
                     .attr('width', width)
+                    .attr('id', 'q3SVG')
     
     // Appending group container to svg
     var graphGroup = graph.append('g')
@@ -92,7 +93,6 @@ export default async function getGraph3 () {
             .text("Reported Satisfaction By Category");
 
         select.onchange = function (e) {
-            console.log(e.target.selectedIndex)
             resetGraph()
 
             function getDataForSelection(index) {
@@ -119,9 +119,6 @@ export default async function getGraph3 () {
                     .attr('height', (d) => { return innerHeight - yScale(d.value) })
                     .attr("fill", (d, i) => color[i % color.length])
                     .on('mouseover', function (event, d) {
-                        console.log('mouse over bar 3!')
-                        console.log(d)
-                        // graphGroup, 500, xScale(parseInt(d.ranking)) + 30, d, [], 0, "value", 0, []
                         appendStackedBarToolTip (
                             graphGroup, 
                             500, 
@@ -139,6 +136,32 @@ export default async function getGraph3 () {
                         d3.selectAll('.toolTip').remove();
                     });
         }
+
+                // Brush handler functions
+                function updateChart (event) {
+                    var selection = event.selection
+                    d3.select('#q3SVG').selectAll('.bar').classed("selected", function (d) {
+                        console.log(d)
+                        return isBrushed (selection, xScale(Number(d.ranking)), yScale(d.value))
+                    })
+        
+                }
+        
+                function isBrushed (edge, x, y) {
+                    var x0 = edge[0][0],
+                        x1 = edge[1][0],
+                        y0 = edge[0][1],
+                        y1 = edge[1][1]
+                        return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
+                }
+        
+                // Calling brush
+                d3.select('#q3SVG').call(
+                    d3.brush()
+                        .extent([[0, 0], [500, 500]])
+                        .on('start brush', updateChart)
+                )    
+
 
     })
 }

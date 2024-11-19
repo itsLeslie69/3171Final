@@ -13,12 +13,15 @@ export default function getGraph5 () {
            var innerHeight = height - padding
 
            var color = ["#F58634", "#54433A"]
-   
+
+
            // Appending svg
            var graph = d3.select('#q5Container')
                            .append('svg')
+                           .attr('id', 'q5SVG')
                            .attr('height', height)
                            .attr('width', width)
+  
            
            // Appending group container to svg
            var graphGroup = graph.append('g')
@@ -98,12 +101,14 @@ export default function getGraph5 () {
            var yAxis = d3.axisLeft()
                            .scale(yScale)
            
-           graphGroup.append('g')
+           var createXaxis = graphGroup.append('g')
                        .attr('transform', "translate(0," + innerHeight + ")" )
                        .call(xAxis)
    
-           graphGroup.append('g')
+            var createYaxis = graphGroup.append('g')
                        .call(yAxis)
+
+
 
             // Labels
             graphGroup.append("text")
@@ -127,40 +132,62 @@ export default function getGraph5 () {
                 .attr("text-anchor", "middle")
                 .text("Passenger Satisfaction by Class");
    
-           var graph = graphGroup.selectAll('.gBar')
+           var graphAppend = graphGroup.selectAll('.gBar')
                                    .data(graphData)
                                    .enter()
                                    .append('g')
-                                        .attr('class', 'gBar')
-           
-           graph.append("rect")
-                   .attr('class', 'bar')
-                   .attr("x", (z) => { return xScale(z[0]) }) // As attribute callbacks iterate, corresponding index for seat class name or avg are referenced as return values
-                   .attr('y', (z) => { return yScale(z[1]) })
-                   .attr('width', xScale.bandwidth())
-                   .attr('height', (z) => { return innerHeight - yScale(z[1]) })
-                   .attr("fill", (d, i) => color[i % color.length])
-                    .on('mouseover', function (event, d) {
-                        appendStackedBarToolTip (
-                            graphGroup, 
-                            500, 
-                            75, 
-                            d, 
-                            [],
-                            0,
-                            d[1].toFixed(2), 
-                            65, 
-                            ["Eco", "Business", "Eco Plus"],
-                            50
-                        )
-                        
-                        
+                                        .attr('class', 'gBar');
+
+            // Brush handler functions
+            function updateChart (event) {
+                var selection = event.selection
+    
+                d3.select('#q5SVG').selectAll('.bar').classed("selected", function (d) {
+                    return isBrushed (selection, xScale(d[0]), yScale(d[1]))
+    
+                })
+    
+            }
+    
+            function isBrushed (edge, x, y) {
+                var x0 = edge[0][0],
+                    x1 = edge[1][0],
+                    y0 = edge[0][1],
+                    y1 = edge[1][1]
+                    return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
+            }
+    
+            // Calling brush
+            graph.call(
+                d3.brush()
+                    .extent([[0, 0], [width, height]])
+                    .on('start brush', updateChart)
+            )
+
+
+                graphAppend.append("rect")
+                    .attr('class', 'bar')
+                    .attr("x", (z) => { return xScale(z[0]) }) // As attribute callbacks iterate, corresponding index for seat class name or avg are referenced as return values
+                    .attr('y', (z) => { return yScale(z[1]) })
+                    .attr('width', xScale.bandwidth())
+                    .attr('height', (z) => { return innerHeight - yScale(z[1]) })
+                    .attr("fill", (d, i) => color[i % color.length])
+                        .on('mouseover', function (event, d) {
+                            appendStackedBarToolTip (
+                                graphGroup, 
+                                500, 
+                                75, 
+                                d, 
+                                [],
+                                0,
+                                d[1].toFixed(2), 
+                                65, 
+                                ["Eco", "Business", "Eco Plus"],
+                                50
+                            )
                             
-                        
-                    })
-                    .on('mouseout', function () {
-                        d3.selectAll('.toolTip').remove();
-                    });
-               })   
-              
-}
+                        })
+                        .on('mouseout', function () {
+                            d3.selectAll('.toolTip').remove();
+                        })
+                })}
