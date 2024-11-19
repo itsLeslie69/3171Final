@@ -147,7 +147,7 @@ export default function getGraph6 () {
         });
 
 
-            // Brush handler functions
+/*             // Brush handler functions
             function updateChart (event) {
                 var selection = event.selection
     
@@ -171,6 +171,6 @@ export default function getGraph6 () {
                 d3.brush()
                     .extent([[0, 0], [500, 500]])
                     .on('start brush', updateChart)
-            )    
+            )     */
     })
 }
