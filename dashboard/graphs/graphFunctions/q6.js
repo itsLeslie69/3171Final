@@ -71,7 +71,9 @@ export default function getGraph6 () {
             .attr("class", "axis-label")
             .attr("text-anchor", "middle")
             .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
-            .text("Total Ticket(s) Cost");           
+            .text("Total Ticket(s) Cost");    
+            
+
 
         // Graphing data
         graphGroup.append('g')
@@ -96,7 +98,7 @@ export default function getGraph6 () {
             .attr('height', d => innerHeight - yScale(d.price)) // Set height
             .attr('fill', (d, i) => color[i]) // Colour
             .attr('class', function (d, i) {
-                return "_" + color[i].slice(1)
+                return "_" + color[i].slice(1) + " bar"
             })
             .on('mouseover', function (event, d) {
                 //console.log('mouse over 6')
@@ -143,5 +145,32 @@ export default function getGraph6 () {
                 .attr("y", 12)
                 .text(s);
         });
+
+
+            // Brush handler functions
+            function updateChart (event) {
+                var selection = event.selection
+    
+                d3.select('#q6SVG').selectAll('.bar').classed("selected", function (d) {
+                    console.log(d)
+                    return isBrushed (selection, xScale(parseInt(d.id)) + 50, yScale(parseFloat(d.price)) + 50)
+                })
+    
+            }
+    
+            function isBrushed (edge, x, y) {
+                var x0 = edge[0][0],
+                    x1 = edge[1][0],
+                    y0 = edge[0][1],
+                    y1 = edge[1][1]
+                    return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
+            }
+    
+            // Calling brush
+            d3.select('#q6SVG').call(
+                d3.brush()
+                    .extent([[0, 0], [500, 500]])
+                    .on('start brush', updateChart)
+            )    
     })
 }
