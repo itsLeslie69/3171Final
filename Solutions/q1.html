@@ -109,8 +109,19 @@
           .attr("cx", (d, i) => xscale(i))
           .attr("cy", (d) => yscale(d))
           //make the radius of each point (circle) 8
-          .attr("r", 8)
-          .attr("fill", "red");
+          .attr("r", 8);
+
+
+          d3.selectAll("circle")          // Selects all `circle` elements in the SVG.
+  .on("mouseover", function () {  // Adds a mouseover event listener.
+    d3.select(this)              // Selects the currently hovered circle.
+      .style("fill", "blue");    // Changes its fill color to blue.
+  })
+  .on("mouseout", function () {  // Adds a mouseout event listener.
+    d3.select(this)              // Selects the circle that the mouse left.
+      .style("fill", "red");     // Changes its fill color to red.
+  });
+
 
         //append the tooltips
         g.selectAll(".label")
