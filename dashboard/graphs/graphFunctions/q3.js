@@ -1,5 +1,6 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
+
+import { appendToolTip } from "../../utilities/toolTips.js";
 
 import resetGraph from "./q3Functions/reset.js"
 
@@ -114,7 +115,7 @@ export default async function getGraph3 () {
             graph.append("rect")
                     .attr('class', 'bar')
                     .on('mouseover', function (event, d) {
-                        appendStackedBarToolTip (
+/*                         appendStackedBarToolTip (
                             graphGroup, 
                             500, 
                             xScale(parseInt(d.ranking)) + 15, 
@@ -125,7 +126,9 @@ export default async function getGraph3 () {
                             90,
                             [],
                             (innerHeight / 2) - (d.value / 2) - 130
-                        )
+                        ) */
+
+                        appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, d.value, -30, -100, 'n')    
                     })
                     .on('mouseout', function () {
                         d3.selectAll('.toolTip').remove();
@@ -141,7 +144,7 @@ export default async function getGraph3 () {
                 }
 
                 // Brush handler functions
-                function updateChart (event) {
+ /*                function updateChart (event) {
                     var selection = event.selection
                     d3.select('#q3SVG').selectAll('.bar').classed("selected", function (d) {
                         console.log(d)
@@ -163,7 +166,7 @@ export default async function getGraph3 () {
                     d3.brush()
                         .extent([[0, 0], [500, 500]])
                         .on('start brush', updateChart)
-                )    
+                )     */
 
 
     })

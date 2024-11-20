@@ -1,5 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { appendPieChartToolTip } from "../../utilities/toolTips.js";
+import { appendToolTip } from "../../utilities/toolTips.js";
 
 export default function getGraph2 () {
     // Defining chart dimensions
@@ -60,10 +60,6 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
 
     innerG.append('path')
     .attr('d', arc) // Drawn path element dimensions are equal to the defined circular geometry above
-    .transition()
-        .delay(1000)
-        .duration(2000)
-        .ease(d3.easeSinInOut)
     .attr('fill', (d, i) => color[i])
     .attr('id', 'piePath')
     .attr('class', function (d, i) {
@@ -73,20 +69,20 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
     // tooltip
     d3.selectAll('#piePath')
         .on('mouseover', function (event, d) {
+        appendToolTip(mainG, 
+            85, 
+            -35, 
+            d,
+            50, 
+            d.data.value + "%",
+            0,
+            0, 
+            "Satisfaction"
+        )
 
-            appendPieChartToolTip (
-                mainG, 
-                500, 
-                -190, 
-                d, 
-                [], 
-                d.data.value + "%", 
-                220, 
-                90
-            )
         })
         .on('mouseout', function () {
-            d3.selectAll('.toolTip').remove();
+            d3.selectAll('.toolTip').remove()
         });
 
 

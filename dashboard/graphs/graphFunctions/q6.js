@@ -1,5 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
+import { appendToolTip } from "../../utilities/toolTips.js";
+
+
 
 export default function getGraph6 () {
     var width = 500 // 1000
@@ -93,18 +95,8 @@ export default function getGraph6 () {
             })
             .join('rect')
             .on('mouseover', function (event, d) {
-                //console.log('mouse over 6')
-                //console.log(d)
-                appendStackedBarToolTip (
-                    graph, 
-                    500, 
-                    (parseInt(d.id) * 25) + 100, 
-                    d, 
-                    [], 
-                    6, 
-                    "$" + Number(d.price).toFixed(0), 
-                    25
-                )
+
+                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(2), 0, -40, "Cost")
             }).on('mouseout', function () {
                 d3.selectAll('.toolTip').remove()
             })

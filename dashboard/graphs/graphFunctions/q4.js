@@ -1,6 +1,4 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
-
 
 export default function getGraph4 () {
        // Set chart dimensions
@@ -75,12 +73,6 @@ export default function getGraph4 () {
                                 .attr('class', 'gBar')
         gGraph.append('rect')
                 .attr('x', d => { return xScale(d.group)})
-                .on('mouseover', function (event, d) {
-                    appendStackedBarToolTip (graphGroup, innerHeight, this.x.baseVal.value + 10, d, [], 3, d.totalDelay, 0, [], 0)  
-                })
-               .on('mouseout', function () {
-                    d3.selectAll('.toolTip').remove()
-                })
                 .transition()
                 .delay(500)
                 .duration(1000)
