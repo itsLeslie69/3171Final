@@ -60,6 +60,10 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
 
     innerG.append('path')
     .attr('d', arc) // Drawn path element dimensions are equal to the defined circular geometry above
+    .transition()
+        .delay(1000)
+        .duration(2000)
+        .ease(d3.easeSinInOut)
     .attr('fill', (d, i) => color[i])
     .attr('id', 'piePath')
     .attr('class', function (d, i) {
@@ -69,8 +73,7 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
     // tooltip
     d3.selectAll('#piePath')
         .on('mouseover', function (event, d) {
-            //console.log(d.data.value)3.
-            // mainG, 500, -160, d, [], "", 320, 180
+
             appendPieChartToolTip (
                 mainG, 
                 500, 

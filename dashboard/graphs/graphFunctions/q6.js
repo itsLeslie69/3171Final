@@ -92,17 +92,9 @@ export default function getGraph6 () {
                 ];
             })
             .join('rect')
-            .attr('x', d => xScale(d.group))  // Position each ticket price with reference to the group
-            .attr('y', d => yScale(d.price))          // Set y position based on the price
-            .attr('width', xScale.bandwidth())// Set width
-            .attr('height', d => innerHeight - yScale(d.price)) // Set height
-            .attr('fill', (d, i) => color[i]) // Colour
-            .attr('class', function (d, i) {
-                return "_" + color[i].slice(1) + " bar"
-            })
             .on('mouseover', function (event, d) {
                 //console.log('mouse over 6')
-                console.log(d)
+                //console.log(d)
                 appendStackedBarToolTip (
                     graph, 
                     500, 
@@ -116,6 +108,21 @@ export default function getGraph6 () {
             }).on('mouseout', function () {
                 d3.selectAll('.toolTip').remove()
             })
+            .attr('x', d => xScale(d.group))  // Position each ticket price with reference to the group
+            .attr('y', d => yScale(d.price))          // Set y position based on the price
+            .attr('width', xScale.bandwidth())// Set width
+            .transition()
+            .duration(2000)
+            .attr('height', d => innerHeight - yScale(d.price)) // Set height
+            .transition()
+            .delay(100)
+            .duration(500)
+            .ease(d3.easeSinInOut)
+            .attr('fill', (d, i) => color[i]) // Colour
+            .attr('class', function (d, i) {
+                return "_" + color[i].slice(1) + " bar"
+            })
+           
 
         // Legend
         const legend = graphGroup.append("g")

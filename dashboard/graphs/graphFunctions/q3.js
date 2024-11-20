@@ -113,11 +113,6 @@ export default async function getGraph3 () {
                 
             graph.append("rect")
                     .attr('class', 'bar')
-                    .attr("x", (d) => { return xScale(parseInt(d.ranking)) }) 
-                    .attr('y', (d) => { return yScale(d.value) })
-                    .attr('width', xScale.bandwidth())
-                    .attr('height', (d) => { return innerHeight - yScale(d.value) })
-                    .attr("fill", (d, i) => color[i % color.length])
                     .on('mouseover', function (event, d) {
                         appendStackedBarToolTip (
                             graphGroup, 
@@ -134,8 +129,16 @@ export default async function getGraph3 () {
                     })
                     .on('mouseout', function () {
                         d3.selectAll('.toolTip').remove();
-                    });
-        }
+                    })
+                    .attr("x", (d) => { return xScale(parseInt(d.ranking)) }) 
+                    .transition()
+                        .delay(50)
+                        .duration(1500)
+                    .attr('y', (d) => { return yScale(d.value) })
+                    .attr('width', xScale.bandwidth())
+                    .attr('height', (d) => { return innerHeight - yScale(d.value) })
+                    .attr("fill", (d, i) => color[i % color.length])
+                }
 
                 // Brush handler functions
                 function updateChart (event) {

@@ -167,27 +167,30 @@ export default function getGraph5 () {
 
                 graphAppend.append("rect")
                     .attr('class', 'bar')
+                    .on('mouseover', function (event, d) {
+                        appendStackedBarToolTip (
+                            graphGroup, 
+                            500, 
+                            75, 
+                            d, 
+                            [],
+                            0,
+                            d[1].toFixed(2), 
+                            65, 
+                            ["Eco", "Business", "Eco Plus"],
+                            50
+                        )
+                        
+                    })
+                    .on('mouseout', function () {
+                        d3.selectAll('.toolTip').remove();
+                    })
                     .attr("x", (z) => { return xScale(z[0]) }) // As attribute callbacks iterate, corresponding index for seat class name or avg are referenced as return values
                     .attr('y', (z) => { return yScale(z[1]) })
                     .attr('width', xScale.bandwidth())
+                    .transition()
+                    .duration(2000)
                     .attr('height', (z) => { return innerHeight - yScale(z[1]) })
                     .attr("fill", (d, i) => color[i % color.length])
-                        .on('mouseover', function (event, d) {
-                            appendStackedBarToolTip (
-                                graphGroup, 
-                                500, 
-                                75, 
-                                d, 
-                                [],
-                                0,
-                                d[1].toFixed(2), 
-                                65, 
-                                ["Eco", "Business", "Eco Plus"],
-                                50
-                            )
-                            
-                        })
-                        .on('mouseout', function () {
-                            d3.selectAll('.toolTip').remove();
-                        })
+                       
                 })}
