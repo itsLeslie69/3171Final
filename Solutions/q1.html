@@ -29,8 +29,8 @@
 
       function renderChart(data) {
         //by using window.innerWidth we are allowing out graph to better fit eatch screen based on the browser
-        const svgwidth = window.innerWidth * 2;
-        const svgheight = 400;
+        const svgwidth = window.innerWidth *2;
+        const svgheight = window.innerHeight/2;
         const padding = 50;
 
         const svg = d3
@@ -106,22 +106,21 @@
         g.selectAll("circle")
           .data(data)
           .join("circle")
+          .style("opacity", "60%")
+          .attr("id", "points_on_chart")
           .attr("cx", (d, i) => xscale(i))
           .attr("cy", (d) => yscale(d))
           //make the radius of each point (circle) 8
-          .attr("r", 8);
-
-
-          d3.selectAll("circle")          // Selects all `circle` elements in the SVG.
-  .on("mouseover", function () {  // Adds a mouseover event listener.
-    d3.select(this)              // Selects the currently hovered circle.
-      .style("fill", "blue");    // Changes its fill color to blue.
-  })
-  .on("mouseout", function () {  // Adds a mouseout event listener.
-    d3.select(this)              // Selects the circle that the mouse left.
-      .style("fill", "red");     // Changes its fill color to red.
-  });
-
+          .attr("r", 2)
+          .attr("fill", "red")
+          .on("mouseover", function () {
+            d3.select(this).attr("fill", "blue")
+            .attr("r", 13); // Change color to blue on hover
+          })
+          .on("mouseout", function () {
+            d3.select(this).attr("fill", "red")
+            .attr("r", 2); // Revert color to red when mouse leaves
+          });
 
         //append the tooltips
         g.selectAll(".label")
