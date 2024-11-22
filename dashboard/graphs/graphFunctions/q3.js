@@ -35,9 +35,12 @@ export default async function getGraph3 () {
     // Appending svg
     var graph = d3.select('#q3Container')
                     .append('svg')
-                    .attr('height', height)
-                    .attr('width', width)
+/*                     .attr('height', height)
+                    .attr('width', width) */
                     .attr('id', 'q3SVG')
+                    .attr('viewBox',
+                        "0 0 " + width + " " + height
+                    )
     
     // Appending group container to svg
     var graphGroup = graph.append('g')
