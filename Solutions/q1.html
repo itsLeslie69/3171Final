@@ -8,11 +8,23 @@
       svg {
         background: lightgray;
       }
+
+      .tooltip {
+        position: absolute;
+        background-color: white;
+        border: 1px solid black;
+        border-radius: 4px;
+        padding: 5px;
+        font-size: 12px;
+        pointer-events: none;
+        display: none;
+      }
     </style>
   </head>
 
   <body>
     <div id="line_chart"></div>
+    <div class="tooltip" id="tooltip"></div>
 
     <script type="module">
       import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
@@ -28,9 +40,14 @@
       });
 
       function renderChart(data) {
+
         //by using window.innerWidth we are allowing out graph to better fit eatch screen based on the browser
         const svgwidth = window.innerWidth *2;
         const svgheight = window.innerHeight/2;
+
+        //by using window.innerWidth we are allowing our graph to better fit each screen based on the browser
+        const svgwidth = window.innerWidth;
+        const svgheight = window.innerHeight / 2;
         const padding = 50;
 
         const svg = d3
@@ -107,6 +124,7 @@
           .data(data)
           .join("circle")
           .style("opacity", "60%")
+
           .attr("id", "points_on_chart")
           .attr("cx", (d, i) => xscale(i))
           .attr("cy", (d) => yscale(d))
@@ -120,6 +138,32 @@
           .on("mouseout", function () {
             d3.select(this).attr("fill", "red")
             .attr("r", 2); // Revert color to red when mouse leaves
+
+          .attr("cx", (d, i) => xscale(i))
+          .attr("cy", (d) => yscale(d))
+          //make the radius of each point (circle) 8
+          .attr("r", 4)
+          .attr("fill", "red")
+          //when the user hovers over the color changes
+          .on("mouseover", function (event, d) {
+            const tooltip = d3.select("#tooltip");
+            tooltip
+              .style("display", "block")
+              .style("left", `${event.pageX + 10}px`)
+              .style("top", `${event.pageY - 10}px`)
+              .text(`Flight Distance: ${d}`);
+            d3.select(this).attr("fill", "blue").attr("r", 13); // Change color to blue and enlarge radius
+          })
+          .on("mousemove", function (event) {
+            const tooltip = d3.select("#tooltip");
+            tooltip
+              .style("left", `${event.pageX + 10}px`)
+              .style("top", `${event.pageY - 10}px`);
+          })
+          .on("mouseout", function () {
+            d3.select("#tooltip").style("display", "none");
+            d3.select(this).attr("fill", "red").attr("r", 4); // Revert color and radius when mouse leaves
+
           });
 
         //append the tooltips

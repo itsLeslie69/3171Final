@@ -7,10 +7,9 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <div class="contentContainer grid grid-cols-11  w-full p-5">
+
         <!--1st Row-->
-        <div></div>
-        <div class="col-span-3 flex flex-col justify-between items-center gap-5 p-5 bg-gray-300 rounded-lg w-[90%] m-2">
+        <div class="lg:col-span-4 sm:col-span-1 flex flex-col justify-between items-center gap-5 p-5 bg-gray-300 rounded-lg w-[90%] m-2">
             <h2>Outline</h2>
             <div id="q7Container" class="bg-gray-400 rounded-lg w-[90%] text-center p-16">
                 <p id="q7Figure">0</p>
@@ -22,20 +21,16 @@
                 <p id="q9Figure">0</p>
             </div>
         </div>
-        <div id="q1Container" class="col-span-3 ">
-            <p class="">Chart 1 Here</p>
+        <div id="q1Container" class="lg:col-span-4 sm:col-span-1 ">
+            
         </div>
-        <div id="q2Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
-        <div></div>
+        <div id="q2Container" class="lg:col-span-4 sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
         <!--2nd Row-->
-        <div></div>
-        <div id="q4Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
-        <div id="q5Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
-        <div id="q6Container" class="col-span-3 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
-        <div></div>
+        <div id="q4Container" class="lg:col-span-4 sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+        <div id="q5Container" class="lg:col-span-4 sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+        <div id="q6Container" class="lg:col-span-4 sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
         <!--3rd Row-->
-        <div></div>
-        <div id="q3Container" class="col-start-5 col-span-3 rounded-lg p-5 shadow-md bg-[#D3D3D3] bg-opacity-70 m-2">
+        <div id="q3Container" class="lg:col-start-5 lg:col-span-4 sm:col-span-1  rounded-lg p-5 shadow-md bg-[#D3D3D3] bg-opacity-70 m-2">
             <select name="graphs" id="dropDown">
                 <option value="select">Select Graph</option>
                 <option value="checkIn">Check-in</option>
@@ -49,10 +44,7 @@
 </body>
 </html>
 <script type="module">
-    import appendSingleFigure from "./utilities/appendSingleFigure.js";
-    import returnLoyalCustomers from "./graphs/singleFigures/q7.js";
-    import returnTotalFlightDist from "./graphs/singleFigures/q8.js";
-    import returnNoDelayCust from "./graphs/singleFigures/q9.js";
+
 
     import getGraph2 from "./graphs/graphFunctions/q2.js";
     import getGraph3 from "./graphs/graphFunctions/q3.js";
@@ -60,9 +52,6 @@
     import getGraph5 from "./graphs/graphFunctions/q5.js";
     import getGraph6 from "./graphs/graphFunctions/q6.js";
 
-    const loyalNum = await returnLoyalCustomers();
-    const totalDistFlown = await returnTotalFlightDist();
-    const noDelayNum = await returnNoDelayCust();
 
     appendSingleFigure('q7Container', loyalNum);
     appendSingleFigure('q8Container', totalDistFlown);

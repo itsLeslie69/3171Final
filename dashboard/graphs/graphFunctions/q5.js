@@ -1,5 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { appendStackedBarToolTip } from "../../utilities/toolTips.js";
+
+import { appendToolTip } from "../../utilities/toolTips.js";
+
 
 export default function getGraph5 () {
            // Defining chart dimensions
@@ -19,8 +21,11 @@ export default function getGraph5 () {
            var graph = d3.select('#q5Container')
                            .append('svg')
                            .attr('id', 'q5SVG')
-                           .attr('height', height)
-                           .attr('width', width)
+/*                            .attr('height', height)
+                           .attr('width', width) */
+                           .attr('viewBox',
+                            "0 0 " + width + " " + height
+                        )
   
            
            // Appending group container to svg
@@ -139,7 +144,7 @@ export default function getGraph5 () {
                                         .attr('class', 'gBar');
 
             // Brush handler functions
-            function updateChart (event) {
+/*             function updateChart (event) {
                 var selection = event.selection
     
                 d3.select('#q5SVG').selectAll('.bar').classed("selected", function (d) {
@@ -162,32 +167,24 @@ export default function getGraph5 () {
                 d3.brush()
                     .extent([[0, 0], [width, height]])
                     .on('start brush', updateChart)
-            )
+            ) */
 
 
                 graphAppend.append("rect")
                     .attr('class', 'bar')
+                    .on('mouseover', function (event, d) {
+                       appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, parseFloat(d[1]).toFixed(2), -10, -100, 'Satisfaction')
+                        
+                    })
+                    .on('mouseout', function () {
+                        d3.selectAll('.toolTip').remove();
+                    })
                     .attr("x", (z) => { return xScale(z[0]) }) // As attribute callbacks iterate, corresponding index for seat class name or avg are referenced as return values
                     .attr('y', (z) => { return yScale(z[1]) })
                     .attr('width', xScale.bandwidth())
+                    .transition()
+                    .duration(2000)
                     .attr('height', (z) => { return innerHeight - yScale(z[1]) })
                     .attr("fill", (d, i) => color[i % color.length])
-                        .on('mouseover', function (event, d) {
-                            appendStackedBarToolTip (
-                                graphGroup, 
-                                500, 
-                                75, 
-                                d, 
-                                [],
-                                0,
-                                d[1].toFixed(2), 
-                                65, 
-                                ["Eco", "Business", "Eco Plus"],
-                                50
-                            )
-                            
-                        })
-                        .on('mouseout', function () {
-                            d3.selectAll('.toolTip').remove();
-                        })
+                       
                 })}
