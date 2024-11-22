@@ -40,6 +40,11 @@
       });
 
       function renderChart(data) {
+
+        //by using window.innerWidth we are allowing out graph to better fit eatch screen based on the browser
+        const svgwidth = window.innerWidth *2;
+        const svgheight = window.innerHeight/2;
+
         //by using window.innerWidth we are allowing our graph to better fit each screen based on the browser
         const svgwidth = window.innerWidth;
         const svgheight = window.innerHeight / 2;
@@ -119,6 +124,21 @@
           .data(data)
           .join("circle")
           .style("opacity", "60%")
+
+          .attr("id", "points_on_chart")
+          .attr("cx", (d, i) => xscale(i))
+          .attr("cy", (d) => yscale(d))
+          //make the radius of each point (circle) 8
+          .attr("r", 2)
+          .attr("fill", "red")
+          .on("mouseover", function () {
+            d3.select(this).attr("fill", "blue")
+            .attr("r", 13); // Change color to blue on hover
+          })
+          .on("mouseout", function () {
+            d3.select(this).attr("fill", "red")
+            .attr("r", 2); // Revert color to red when mouse leaves
+
           .attr("cx", (d, i) => xscale(i))
           .attr("cy", (d) => yscale(d))
           //make the radius of each point (circle) 8
@@ -143,6 +163,7 @@
           .on("mouseout", function () {
             d3.select("#tooltip").style("display", "none");
             d3.select(this).attr("fill", "red").attr("r", 4); // Revert color and radius when mouse leaves
+
           });
 
         //append the tooltips

@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/src/output.css">
+    <link rel="stylesheet" href="../src/output.css">
     <title>Dashboard</title>
 </head>
 <body>
 
-    <div class="contentContainer grid sm:grid-cols-1 lg:grid-cols-12 w-full p-5">
         <!--1st Row-->
         <div class="lg:col-span-4 sm:col-span-1 flex flex-col justify-between items-center gap-5 p-5 bg-gray-300 rounded-lg w-[90%] m-2">
             <h2>Outline</h2>
@@ -45,38 +44,22 @@
 </body>
 </html>
 <script type="module">
-    // Imports
-    // Helper Functions
-    import appendSingleFigure from "./utilities/appendSingleFigure.js"
-    // Single Figures
-    import returnLoyalCustomers from "./graphs/singleFigures/q7.js"
-    import returnTotalFlightDist from "./graphs/singleFigures/q8.js"
-    import returnNoDelayCust from "./graphs/singleFigures/q9.js"
-    
-    // Graphs are JS files that simply append the appropriate graph
-    // to a selected div with an ID for that graph
-    import getGraph2 from "./graphs/graphFunctions/q2.js"
-    import getGraph3 from "./graphs/graphFunctions/q3.js"
-    import getGraph4 from "./graphs/graphFunctions/q4.js"
-    import getGraph5 from "./graphs/graphFunctions/q5.js"
-    import getGraph6 from "./graphs/graphFunctions/q6.js"
-    
-    var loyalNum = await returnLoyalCustomers()
-    var totalDistFlown = await returnTotalFlightDist()
-    var noDelayNum = await returnNoDelayCust()
-    
-
-    appendSingleFigure('q7Container', loyalNum)
-    appendSingleFigure('q8Container', totalDistFlown)
-    appendSingleFigure('q9Container', noDelayNum)
 
 
-    
-    getGraph2()
-    getGraph3()
-    getGraph4()
-    getGraph5()
-    getGraph6()
+    import getGraph2 from "./graphs/graphFunctions/q2.js";
+    import getGraph3 from "./graphs/graphFunctions/q3.js";
+    import getGraph4 from "./graphs/graphFunctions/q4.js";
+    import getGraph5 from "./graphs/graphFunctions/q5.js";
+    import getGraph6 from "./graphs/graphFunctions/q6.js";
 
 
+    appendSingleFigure('q7Container', loyalNum);
+    appendSingleFigure('q8Container', totalDistFlown);
+    appendSingleFigure('q9Container', noDelayNum);
+
+    getGraph2();
+    getGraph3();
+    getGraph4();
+    getGraph5();
+    getGraph6();
 </script>
