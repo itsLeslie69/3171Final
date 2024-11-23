@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../src/output.css">
     <title>Flight Distance Chart</title>
     <style>
       svg {
@@ -11,7 +12,7 @@
 
       .tooltip {
         position: absolute;
-        background-color: white;
+        background-color: rgb(242, 11, 11);
         border: 1px solid black;
         border-radius: 4px;
         padding: 5px;
@@ -25,9 +26,12 @@
   <body>
     <div id="line_chart"></div>
     <div class="tooltip" id="tooltip"></div>
+    <div class="brush"></div>
 
     <script type="module">
       import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+    
 
       //load the data from the external file
       d3.csv("../data/customer_satisfaction.csv").then((data) => {
@@ -42,12 +46,16 @@
       function renderChart(data) {
 
         //by using window.innerWidth we are allowing out graph to better fit eatch screen based on the browser
-        const svgwidth = window.innerWidth *2;
+        const svgwidth = window.innerWidth ;
         const svgheight = window.innerHeight/2;
 
-        //by using window.innerWidth we are allowing our graph to better fit each screen based on the browser
-        const svgwidth = window.innerWidth;
-        const svgheight = window.innerHeight / 2;
+        const maxBrushWidth = svgwidth/2;
+
+        var width = svgwidth/2;
+        var height = svgheight/2;
+
+
+
         const padding = 50;
 
         const svg = d3
@@ -55,6 +63,8 @@
           .append("svg")
           .attr("width", svgwidth)
           .attr("height", svgheight);
+
+
 
         svg
           .append("text")
@@ -70,6 +80,8 @@
         const g = svg
           .append("g")
           .attr("transform", `translate(${padding},${padding})`);
+
+
 
         //create scales for our data (ranges and domains allowing us to visualize data)
         const xscale = d3
@@ -137,7 +149,7 @@
           })
           .on("mouseout", function () {
             d3.select(this).attr("fill", "red")
-            .attr("r", 2); // Revert color to red when mouse leaves
+            .attr("r", 2)// Revert color to red when mouse leaves
 
           .attr("cx", (d, i) => xscale(i))
           .attr("cy", (d) => yscale(d))
@@ -183,7 +195,41 @@
           //we will make the font size 11px
           .style("font-size", "11px")
           .style("fill", "black");
+
+          
+          //BRUSH CODE 
+          // brush
+const brush = d3.brushX()
+//.extent determines the brushable area  
+//if we say 0,0 that means that our brushable area is starting at 0, 0 
+  .extent([
+    [0, 0],
+    [svgwidth , svgheight-(svgheight/7)]
+  ])
+  .on("start brush end", (event) => {
+    console.log(event);
+  });
+
+
+  //name for brush container 
+  
+// Create or select the brush container
+const movableGreyBox= svg.select(".brush");
+
+  if (movableGreyBox.empty()) {
+//if it doesnt exist we can add it otherwise we don't want to create more 
+//and more grey boxes creating disorganization and distress for users 
+svg.append("g")
+  .attr("class", "brush")
+  .call(brush)
+  //with brush.move the [0, 100] keeps a predefined brush area (grey box)
+  //in your chart so it will start at 0 to 100 on the x axis 
+  .call(brush.move, [0, 0 + maxBrushWidth])
+  .select(".overlay")
+  .style("pointer-events", "none"); // Disable pointer events by default
+  }
       }
+    )}
     </script>
   </body>
 </html>
