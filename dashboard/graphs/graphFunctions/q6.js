@@ -17,9 +17,12 @@ export default function getGraph6 () {
     // Appending svg
     var graph = d3.select('#q6Container')
                     .append('svg')
-                    .attr('height', height)
-                    .attr('width', width)
+/*                     .attr('height', height)
+                    .attr('width', width) */
                     .attr('id', 'q6SVG')
+                    .attr('viewBox',
+                        "0 0 " + width + " " + height
+                    )
     
     // Graph title
     d3.select('#q6SVG')

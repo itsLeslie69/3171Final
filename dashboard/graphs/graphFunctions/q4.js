@@ -13,9 +13,12 @@ export default function getGraph4 () {
 
         // Add SVG
         var svg = d3.select("#q4Container").append("svg")
-        .attr("width", width)
-        .attr("height", height)
+/*         .attr("width", width)
+        .attr("height", height) */
         .attr('id', 'q4SVG')
+        .attr('viewBox',
+            "0 0 " + width + " " + height
+        )
 
         var graphGroup = svg.append('g')
             .attr("transform", "translate(50, 50)")

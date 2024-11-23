@@ -21,8 +21,11 @@ export default function getGraph5 () {
            var graph = d3.select('#q5Container')
                            .append('svg')
                            .attr('id', 'q5SVG')
-                           .attr('height', height)
-                           .attr('width', width)
+/*                            .attr('height', height)
+                           .attr('width', width) */
+                           .attr('viewBox',
+                            "0 0 " + width + " " + height
+                        )
   
            
            // Appending group container to svg
