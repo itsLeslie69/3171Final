@@ -13,7 +13,7 @@ export default async function returnTotalFlightDist () {
         distance += flightDistArr[i]
     }
     
-    return distance
+    return new Promise ((resolve) => {resolve(distance)})
 
 }
 

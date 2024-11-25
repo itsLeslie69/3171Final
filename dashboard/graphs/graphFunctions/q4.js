@@ -111,7 +111,7 @@ export default function getGraph4 () {
         // Calling brush
         brushGroup.call(
             d3.brush()
-                .extent([[0, 0], [500, 500]])
+                .extent([[50, 50], [490, 470]])
                 .on('start brush', updateChart)
         )    
 

@@ -5,7 +5,7 @@ export default async function returnNoDelayCust () {
 
     const num = data.filter((record) => record["Departure Delay in Minutes"] == 0 && record["Arrival Delay in Minutes"] == 0).length
 
-    return num
+    return new Promise ((resolve) => {resolve(num)})
 
 }
 
