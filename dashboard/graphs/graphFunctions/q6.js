@@ -4,7 +4,7 @@ import { appendToolTip } from "../../utilities/toolTips.js";
 
 
 export default function getGraph6 () {
-    var width = 500 // 1000
+    var width = 500 
     var height = 500
 
     var padding = 100

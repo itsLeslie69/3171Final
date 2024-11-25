@@ -105,8 +105,11 @@ export default function getGraph4 () {
                 return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
         }
 
+        var brushGroup = svg.append("g").attr("class", "brush");
+
+
         // Calling brush
-        svg.call(
+        brushGroup.call(
             d3.brush()
                 .extent([[0, 0], [500, 500]])
                 .on('start brush', updateChart)

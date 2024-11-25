@@ -78,6 +78,17 @@ path:hover {
 
 /* Tooltip styles */
 
+.tooltip {
+    position: absolute;
+    background-color: rgb(242, 11, 11);
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    display: none;
+  }
+
 .toolTipBackground {
     background-color: #36454F;
     border-radius: 10px;
