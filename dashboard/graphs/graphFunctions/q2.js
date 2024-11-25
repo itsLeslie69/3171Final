@@ -64,8 +64,14 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
     .data(propData) // Joining data to drawn elements
     .enter();
 
-    innerG.append('path')
+    var paths = innerG.append('path')
+   
+    paths
     .attr('d', arc) // Drawn path element dimensions are equal to the defined circular geometry above
+    .transition()
+    .delay(2000)
+    .duration(2000)
+    .ease(d3.easeSinInOut)
     .attr('fill', (d, i) => color[i])
     .attr('id', 'piePath')
     .attr('class', function (d, i) {
@@ -73,23 +79,22 @@ d3.csv('../data/customer_satisfaction.csv').then((data) => {
     })
     
     // tooltip
-    d3.selectAll('#piePath')
-        .on('mouseover', function (event, d) {
-        appendToolTip(mainG, 
-            85, 
-            -35, 
-            d,
-            50, 
-            d.data.value + "%",
-            0,
-            0, 
-            "Satisfaction"
-        )
+    paths.on('mouseover', function (event, d) {
+    appendToolTip(mainG, 
+        85, 
+        -35, 
+        d,
+        50, 
+        d.data.value + "%",
+        0,
+        0, 
+        "Satisfaction"
+    )
 
-        })
-        .on('mouseout', function () {
-            d3.selectAll('.toolTip').remove()
-        });
+    })
+    .on('mouseout', function () {
+        d3.selectAll('.toolTip').remove()
+    });
 
 
     // Legend

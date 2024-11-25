@@ -20,12 +20,12 @@ export default async function getGraph3 () {
 
     var select = document.getElementById('dropDown')
 
+
     // Defining chart dimensions
     var width = 500
     var height = 500
 
     var padding = 100
-    var barWidth = 15
 
     var innerWidth = width - padding
     var innerHeight = height - padding
@@ -88,16 +88,39 @@ export default async function getGraph3 () {
             .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
             .text("Number of Respondents (n)");      
             
-        //Title
-        graphGroup.append("text")
-            .attr("class", "axis-label")
-            .attr("x", innerWidth / 2)
-            .attr("y", -30)
-            .attr("text-anchor", "middle")
-            .text("Reported Satisfaction By Category");
+        
 
         select.onchange = function (e) {
             resetGraph()
+
+            function removeTitle () {
+                let tempTitle = document.getElementById('q3Title')
+                if (tempTitle) {
+                    tempTitle.remove()
+                }
+            }
+
+            removeTitle()
+            
+            function getTitle(index) {
+                switch (index) {
+                    case 1: return "Reported Check-In Satisfaction"
+                    case 2: return "Reported Booking Ease Satisfaction"
+                    case 3: return "Reported Satisfaction"
+                    case 4: return "Reported Gate Location Satisfaction"
+                    case 5: return "Reported Baggage Handling Satisfaction"
+                    default: return []
+                }
+            }
+
+            //Title
+            graphGroup.append("text")
+            .attr("id", "q3Title")
+            .attr("x", innerWidth / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            .text(getTitle(e.target.selectedIndex));
+
 
             function getDataForSelection(index) {
                 switch (index) {
@@ -118,19 +141,6 @@ export default async function getGraph3 () {
             graph.append("rect")
                     .attr('class', 'bar')
                     .on('mouseover', function (event, d) {
-/*                         appendStackedBarToolTip (
-                            graphGroup, 
-                            500, 
-                            xScale(parseInt(d.ranking)) + 15, 
-                            d, 
-                            [], 
-                            3, 
-                            "n = " + d.value,
-                            90,
-                            [],
-                            (innerHeight / 2) - (d.value / 2) - 130
-                        ) */
-
                         appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, d.value, -30, -100, 'n')    
                     })
                     .on('mouseout', function () {
@@ -145,6 +155,8 @@ export default async function getGraph3 () {
                     .attr('height', (d) => { return innerHeight - yScale(d.value) })
                     .attr("fill", (d, i) => color[i % color.length])
                 }
+
+
 
                 // Brush handler functions
  /*                function updateChart (event) {
