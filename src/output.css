@@ -620,11 +620,6 @@ video {
   background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1));
 }
 
-.bg-gray-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(156 163 175 / var(--tw-bg-opacity, 1));
-}
-
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
 }
@@ -633,20 +628,8 @@ video {
   --tw-bg-opacity: 0.7;
 }
 
-.p-16 {
-  padding: 4rem;
-}
-
 .p-5 {
   padding: 1.25rem;
-}
-
-.p-2 {
-  padding: 0.5rem;
-}
-
-.text-center {
-  text-align: center;
 }
 
 .shadow-2xl {

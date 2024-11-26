@@ -30,7 +30,7 @@ export default async function getGraph3 () {
     var innerWidth = width - padding
     var innerHeight = height - padding
 
-    var color = ["#F58634", "#54433A"]
+    var color = ["#54433A", "#F58634", "#008970", "#00C0A3", "#bba79c"]
 
     // Appending svg
     var graph = d3.select('#q3Container')
@@ -51,10 +51,10 @@ export default async function getGraph3 () {
     d3.csv('/data/customer_satisfaction.csv').then((data) => {
 
         // x-axis scale
-        var xScale = d3.scaleBand()
-                        .domain([1, 2, 3, 4, 5])  
+        var xScale = d3.scaleLinear()
+                        .domain([1, 5])  
                         .range([0, innerWidth])
-                        .padding([0.2])
+                        
         var xAxis = d3.axisBottom()
                         .scale(xScale)
         // y-axis
@@ -87,11 +87,17 @@ export default async function getGraph3 () {
             .attr("text-anchor", "middle")
             .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
             .text("Number of Respondents (n)");      
-            
         
+        // Title and default text
+            graphGroup.append("text")
+            .attr("id", "q3Title")
+            .attr("x", innerWidth / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            
 
-        select.onchange = function (e) {
-            resetGraph()
+       select.onchange = function (e) {
+            //resetGraph()
 
             function removeTitle () {
                 let tempTitle = document.getElementById('q3Title')
@@ -109,18 +115,33 @@ export default async function getGraph3 () {
                     case 3: return "Reported Satisfaction"
                     case 4: return "Reported Gate Location Satisfaction"
                     case 5: return "Reported Baggage Handling Satisfaction"
-                    default: return []
+                    default: return "Overview"
                 }
             }
 
             //Title
-            graphGroup.append("text")
-            .attr("id", "q3Title")
-            .attr("x", innerWidth / 2)
-            .attr("y", -30)
-            .attr("text-anchor", "middle")
-            .text(getTitle(e.target.selectedIndex));
+            d3.select("#q3Title")
+                .text(getTitle(e.target.selectedIndex));
 
+            d3.select("#q3SVG").selectAll(".path-" + e.target.selectedIndex)
+                .transition()
+                .duration(50)
+                .style('opacity', 1)
+
+            // Select all paths
+            var paths = d3.select("#q3SVG").selectAll("path");
+
+            // Filter for paths that do not match the selected index
+            var invalidPaths = paths.filter(function() {
+            // Extract the class suffix and check if it doesn't match the selectedIndex
+            var classSuffix = d3.select(this).attr("class").split("-").pop();
+            return classSuffix != e.target.selectedIndex; // Compare as a string
+            });
+
+            // Apply styles to the invalid paths
+            invalidPaths.style("opacity", 0.1); // Example style
+
+        }
 
             function getDataForSelection(index) {
                 switch (index) {
@@ -133,12 +154,30 @@ export default async function getGraph3 () {
                 }
             }
 
-            var graph = graphGroup.selectAll('.graph')
-                            .data(getDataForSelection(e.target.selectedIndex))
-                            .enter()
-                            .append('g')
+            for (let i = 1; i < 6; i++) {
+                var graph = graphGroup.selectAll('.graph')
+                .data([getDataForSelection(1)])
+                .enter()
+            
+                // Area chart
+                var createAreaChart = d3.area()
+                // First area chart, check-in satisfaction
+                graph.append('path')
+                    .datum(getDataForSelection(i))
+                    .attr('d', createAreaChart
+                        .x((d) => {return xScale(parseFloat(d.ranking))})
+                        .y0(innerHeight)
+                        .y1((d) => {return yScale(parseFloat(d.value))})
+                    )
+                    .attr('fill', () => {return color[i - 1]})
+                    .attr('stroke', '#d3d3d3')
+                    .attr('stroke-width', 2.5)
+                    .style('opacity', 0.65)
+                    .attr("class", "path-" + i)
+                    
+            }
                 
-            graph.append("rect")
+/*             graph.append("rect")
                     .attr('class', 'bar')
                     .on('mouseover', function (event, d) {
                         appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, d.value, -30, -100, 'n')    
@@ -154,7 +193,7 @@ export default async function getGraph3 () {
                     .attr('width', xScale.bandwidth())
                     .attr('height', (d) => { return innerHeight - yScale(d.value) })
                     .attr("fill", (d, i) => color[i % color.length])
-                }
+                } */
 
 
 
@@ -183,6 +222,6 @@ export default async function getGraph3 () {
                         .on('start brush', updateChart)
                 )     */
 
-
-    })
+}
+)
 }
