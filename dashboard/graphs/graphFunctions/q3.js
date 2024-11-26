@@ -88,26 +88,19 @@ export default async function getGraph3 () {
             .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
             .text("Number of Respondents (n)");      
         
-        // Title and default text
-            graphGroup.append("text")
-            .attr("id", "q3Title")
-            .attr("x", innerWidth / 2)
-            .attr("y", -30)
-            .attr("text-anchor", "middle")
-            
-
+        // Handling dropdown changing category, changing data styles and title    
        select.onchange = function (e) {
-            //resetGraph()
-
+            // Function to remove title on dropdown input
             function removeTitle () {
                 let tempTitle = document.getElementById('q3Title')
                 if (tempTitle) {
                     tempTitle.remove()
                 }
             }
-
+            // Removing title after dropdown changes
             removeTitle()
             
+            // Function to format title based off of dropdown input
             function getTitle(index) {
                 switch (index) {
                     case 1: return "Reported Check-In Satisfaction"
@@ -119,9 +112,13 @@ export default async function getGraph3 () {
                 }
             }
 
-            //Title
-            d3.select("#q3Title")
-                .text(getTitle(e.target.selectedIndex));
+            //Title  
+            graphGroup.append("text")
+            .attr("id", "q3Title")
+            .attr("x", innerWidth / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            .text(getTitle(e.target.selectedIndex));
 
             d3.select("#q3SVG").selectAll(".path-" + e.target.selectedIndex)
                 .transition()
@@ -142,7 +139,10 @@ export default async function getGraph3 () {
             invalidPaths.style("opacity", 0.1); // Example style
 
         }
-
+            // Swtich statement to return data from helper functions
+            // Each function corresponds to each required category of information
+            // Each helper function returns an array of objects
+            // which store a ranking as well as the number of respondents for that ranking
             function getDataForSelection(index) {
                 switch (index) {
                     case 1: return checkInData
@@ -153,75 +153,48 @@ export default async function getGraph3 () {
                     default: return []
                 }
             }
-
+            // Loop to create area charts
             for (let i = 1; i < 6; i++) {
                 var graph = graphGroup.selectAll('.graph')
-                .data([getDataForSelection(1)])
+                .data([getDataForSelection(i)]) // Returning values at each iteration, correspond to data
                 .enter()
             
-                // Area chart
+                // Area chart creation
                 var createAreaChart = d3.area()
-                // First area chart, check-in satisfaction
+                
                 graph.append('path')
                     .datum(getDataForSelection(i))
-                    .attr('d', createAreaChart
+                    .attr('d', createAreaChart // Positioning
                         .x((d) => {return xScale(parseFloat(d.ranking))})
                         .y0(innerHeight)
                         .y1((d) => {return yScale(parseFloat(d.value))})
                     )
-                    .attr('fill', () => {return color[i - 1]})
+                    .attr('fill', () => {return color[i - 1]}) // Offsetting index due to loop starting at 1
                     .attr('stroke', '#d3d3d3')
                     .attr('stroke-width', 2.5)
                     .style('opacity', 0.65)
-                    .attr("class", "path-" + i)
-                    
+                    .attr("class", "path-" + i)  
             }
                 
-/*             graph.append("rect")
-                    .attr('class', 'bar')
-                    .on('mouseover', function (event, d) {
-                        appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, d.value, -30, -100, 'n')    
-                    })
-                    .on('mouseout', function () {
-                        d3.selectAll('.toolTip').remove();
-                    })
-                    .attr("x", (d) => { return xScale(parseInt(d.ranking)) }) 
-                    .transition()
-                        .delay(50)
-                        .duration(1500)
-                    .attr('y', (d) => { return yScale(d.value) })
-                    .attr('width', xScale.bandwidth())
-                    .attr('height', (d) => { return innerHeight - yScale(d.value) })
-                    .attr("fill", (d, i) => color[i % color.length])
-                } */
+        // Appending legend
+        const legend = graphGroup.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${250}, 10)`);
+        // Manually setting and iterating legend text
+        // Array order corresponds to colour, which orresponds to area chart data
+        ["Check-In", "Booking", "Gate Location", "Service", "Baggage Handling"].forEach((s, v) => {
+            const legendRow = legend.append("g")
+                .attr("transform", `translate(0, ${v * 20})`)
+                
+            legendRow.append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", (d, i) => color[v]);
 
-
-
-                // Brush handler functions
- /*                function updateChart (event) {
-                    var selection = event.selection
-                    d3.select('#q3SVG').selectAll('.bar').classed("selected", function (d) {
-                        console.log(d)
-                        return isBrushed (selection, xScale(Number(d.ranking)), yScale(d.value))
-                    })
-        
-                }
-        
-                function isBrushed (edge, x, y) {
-                    var x0 = edge[0][0],
-                        x1 = edge[1][0],
-                        y0 = edge[0][1],
-                        y1 = edge[1][1]
-                        return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
-                }
-        
-                // Calling brush
-                d3.select('#q3SVG').call(
-                    d3.brush()
-                        .extent([[0, 0], [500, 500]])
-                        .on('start brush', updateChart)
-                )     */
-
-}
-)
+            legendRow.append("text")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text(s);
+        });
+    })
 }
