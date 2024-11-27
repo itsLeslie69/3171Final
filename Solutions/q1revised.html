@@ -38,13 +38,11 @@
   <body>
     <h1>Flight Distance</h1>
     <div id="chart-container"></div>
-    <div class="tooltip" id="tooltip"></div>
     <script>
       //set dimensions and margins to create distance between other graphs on our index.html
-      const margin = { top: 20, right: 100, bottom: 50, left: 100 };
-      const width = 1600;
-      const height = 500;
-      const padding = 50;
+      const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+      const width = 1000 - margin.left - margin.right;
+      const height = 500 - margin.top - margin.bottom;
 
       //initialize the scales
       const xScale = d3.scaleLinear().range([0, width]);
@@ -58,19 +56,28 @@
       const svg = d3
         .select("#chart-container")
         .append("svg")
-        .attr("width", width)
+        .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Add a clipping path to constrain the line and points to the chart area
+      svg
+        .append("defs")
+        .append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height);
 
       // Add a title to the x-axis
       svg
         .append("text")
         .attr("id", "x-axis-title")
-        .attr("x", (width - margin.left - margin.right) / 2 + margin.left) // Centered horizontally
-        .attr("y", height + 38) // Slightly below the x-axis
-        .attr("text-anchor", "middle") // Center align the text
-        .attr("font-size", "20px")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
         .attr("fill", "black")
         .text("Flight ID");
 
@@ -80,11 +87,11 @@
         .attr("id", "y-axis-title")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -padding / 2 - 20)
-        .text("Flight Distance")
-        .style("font-weight", "bold")
-        .style("font-size", "20px")
-        .style("fill", "black");
+        .attr("y", -margin.left + 20)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", "black")
+        .text("Flight Distance");
 
       svg
         .append("g")
@@ -98,9 +105,7 @@
         .x((d, i) => xScale(d.id))
         .y((d) => yScale(d.distance));
 
-      //select the tooltip
-      const tooltip = d3.select("#tooltip");
-
+      
       //load the data from the external data file
       d3.csv("../data/customer_satisfaction.csv").then((data) => {
         //parse data from our files
@@ -110,18 +115,22 @@
         }));
 
         //set domains
-        xScale.domain([0, parsedData.length - 1]);
+        xScale.domain([0, parsedData.length +1]);
         yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
 
-        //append the line
+        //append the line with clipping
         const path = svg
+          .append("g")
+          .attr("clip-path", "url(#clip)") 
           .append("path")
           .datum(parsedData)
           .attr("class", "line")
           .attr("d", line);
 
-        //create circles
+        //create circles with clipping
         svg
+          .append("g")
+          .attr("clip-path", "url(#clip)") 
           .selectAll(".dot")
           .data(parsedData)
           .join("circle")
@@ -130,19 +139,7 @@
           .attr("cy", (d) => yScale(d.distance))
           .attr("r", 4)
           .attr("fill", "red")
-          .on("mouseover", function (event, d) {
-            console.log(d);
-            const tooltip = d3.select("#tooltip");
-            tooltip
-              .style("display", "block")
-              .style("left", `${event.pageX + 10}px`)
-              .style("top", `${event.pageY - 10}px`)
-              .text(`Flight Distance: ${d.distance}`);
-            d3.select(this).attr("fill", "blue").attr("r", 13);
-          })
-          .on("mouseout", () => {
-            tooltip.style("display", "none");
-          });
+        ;
 
         //append axes
         svg.select(".x.axis").call(xAxis);
