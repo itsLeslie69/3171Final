@@ -10,10 +10,12 @@
         background-color: #f9f9f9;
       }
 
+      /* Line colours: "#F58634" #00C0A3 */
+      
       .line {
         fill: none;
-        stroke: steelblue;
-        stroke-width: 1.5;
+        stroke: #F58634;
+        stroke-width: 3.5;
       }
 
       .axis path,
@@ -68,7 +70,7 @@
         .attr("id", "clip")
         .append("rect")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
 
       // Add a title to the x-axis
       svg
@@ -138,8 +140,7 @@
           .attr("cx", (d) => xScale(d.id))
           .attr("cy", (d) => yScale(d.distance))
           .attr("r", 4)
-          .attr("fill", "red")
-        ;
+          .attr("fill", "#F58634");
 
         //append axes
         svg.select(".x.axis").call(xAxis);
@@ -160,7 +161,7 @@
           .attr("height", height)
           .style("fill", "none")
           .style("pointer-events", "all")
-          .call(zoom);
+          .call(zoom)
 
         //zoom
         function zoomed({ transform }) {
@@ -180,7 +181,7 @@
           svg
             .selectAll(".dot")
             .attr("cx", (d) => newXScale(d.id))
-            .attr("cy", (d) => yScale(d.distance));
+            .attr("cy", (d) => yScale(d.distance))
         }
       });
     </script>
