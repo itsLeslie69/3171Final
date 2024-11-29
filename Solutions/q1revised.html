@@ -12,32 +12,44 @@
 
       .line {
         fill: none;
-        stroke: steelblue;
         stroke-width: 1.5;
       }
 
-      .axis path,
-      .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
+      .display {
+        display: flex;
+        justify-content: left;
+        margin-bottom: 20px;
+        margin-left: 1%;
       }
 
-      .tooltip {
-        position: absolute;
-        background-color: rgba(255, 255, 255, 0.9);
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 8px;
-        font-size: 12px;
-        pointer-events: none;
-        display: none;
+      .box-satisfied {
+        fill: "green";
+        background-color: green;
+        width: 50px;
+        height: 50px;
+        padding: 5%;
+        margin: 1%;
+      }
+
+      .box-unsatisfied {
+        fill: "red";
+        background-color: red;
+        width: 50px;
+        height: 50px;
+        padding: 5%;
+        margin: 1%;
       }
     </style>
   </head>
   <body>
     <h1>Flight Distance</h1>
+
     <div id="chart-container"></div>
+    <div class="display">
+      <div class="box-satisfied">satisfied</div>
+      <div class="box-unsatisfied">unsatisfied</div>
+    </div>
+
     <script>
       //set dimensions and margins to create distance between other graphs on our index.html
       const margin = { top: 20, right: 30, bottom: 50, left: 100 };
@@ -61,7 +73,7 @@
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-      // Add a clipping path to constrain the line and points to the chart area
+      //add a clipping path to constrain the line and points to the chart area
       svg
         .append("defs")
         .append("clipPath")
@@ -70,7 +82,7 @@
         .attr("width", width)
         .attr("height", height);
 
-      // Add a title to the x-axis
+      //add a title to the x-axis
       svg
         .append("text")
         .attr("id", "x-axis-title")
@@ -93,58 +105,108 @@
         .attr("fill", "black")
         .text("Flight Distance");
 
-      svg
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0,${height})`);
+      //append groups for axes
+      svg.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
       svg.append("g").attr("class", "y axis");
 
       //create our line path
       const line = d3
         .line()
-        .x((d, i) => xScale(d.id))
+        .x((d) => xScale(d.id))
         .y((d) => yScale(d.distance));
 
-      
       //load the data from the external data file
       d3.csv("../data/customer_satisfaction.csv").then((data) => {
         //parse data from our files
         const parsedData = data.map((d, i) => ({
           id: i,
           distance: +d["Flight Distance"],
+          satisfied: d["satisfaction"] === "satisfied",
         }));
 
+        //split data by satisfaction
+        const satisfiedData = parsedData.filter((d) => d.satisfied);
+        const notSatisfiedData = parsedData.filter((d) => !d.satisfied);
+
         //set domains
-        xScale.domain([0, parsedData.length +1]);
+        xScale.domain([0, parsedData.length + 1]);
         yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
 
-        //append the line with clipping
-        const path = svg
+        //append the satisfied line
+        const satisfiedPath = svg
           .append("g")
-          .attr("clip-path", "url(#clip)") 
+          .attr("clip-path", "url(#clip)")
           .append("path")
-          .datum(parsedData)
-          .attr("class", "line")
-          .attr("d", line);
+          .datum(satisfiedData)
+          .attr("class", "line satisfied")
+          .attr("d", line)
+          .attr("stroke", "green");
 
-        //create circles with clipping
-        svg
+        //append the not satisfied line
+        const notSatisfiedPath = svg
           .append("g")
-          .attr("clip-path", "url(#clip)") 
-          .selectAll(".dot")
-          .data(parsedData)
+          .attr("clip-path", "url(#clip)")
+          .append("path")
+          .datum(notSatisfiedData)
+          .attr("class", "line not-satisfied")
+          .attr("d", line)
+          .attr("stroke", "red");
+
+        //create satisfied points and labels
+        const satisfiedGroup = svg.append("g").attr("clip-path", "url(#clip)");
+
+        satisfiedGroup
+          .selectAll(".dot-satisfied")
+          .data(satisfiedData)
           .join("circle")
-          .attr("class", "dot")
+          .attr("class", "dot-satisfied")
           .attr("cx", (d) => xScale(d.id))
           .attr("cy", (d) => yScale(d.distance))
-          .attr("r", 4)
+          .attr("r", 5)
+          .attr("fill", "green");
+
+        satisfiedGroup
+          .selectAll(".label-satisfied")
+          .data(satisfiedData)
+          .join("text")
+          .attr("class", "label-satisfied")
+          .attr("x", (d) => xScale(d.id))
+          .attr("y", (d) => yScale(d.distance) - 10)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "10px")
+          .attr("fill", "green")
+          .text((d) => d.distance);
+
+        //create not satisfied points and labels
+        const notSatisfiedGroup = svg.append("g").attr("clip-path", "url(#clip)");
+
+        notSatisfiedGroup
+          .selectAll(".dot-not-satisfied")
+          .data(notSatisfiedData)
+          .join("circle")
+          .attr("class", "dot-not-satisfied")
+          .attr("cx", (d) => xScale(d.id))
+          .attr("cy", (d) => yScale(d.distance))
+          .attr("r", 5)
+          .attr("fill", "red");
+
+        notSatisfiedGroup
+          .selectAll(".label-not-satisfied")
+          .data(notSatisfiedData)
+          .join("text")
+          .attr("class", "label-not-satisfied")
+          .attr("x", (d) => xScale(d.id))
+          .attr("y", (d) => yScale(d.distance) - 10)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "10px")
           .attr("fill", "red")
-        ;
+          .text((d) => d.distance);
 
         //append axes
         svg.select(".x.axis").call(xAxis);
         svg.select(".y.axis").call(yAxis);
 
+        //zoom functionality
         const zoom = d3
           .zoom()
           .scaleExtent([1, 10])
@@ -162,7 +224,7 @@
           .style("pointer-events", "all")
           .call(zoom);
 
-        //zoom
+        //zoom behavior
         function zoomed({ transform }) {
           //rescale x-axis
           const newXScale = transform.rescaleX(xScale);
@@ -171,16 +233,32 @@
           svg.select(".x.axis").call(xAxis.scale(newXScale));
 
           //update lines
-          path.attr(
+          satisfiedPath.attr(
             "d",
-            line.x((d) => newXScale(d.id))
+            d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+          );
+          notSatisfiedPath.attr(
+            "d",
+            d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
           );
 
-          //update points
+          //update points and labels
           svg
-            .selectAll(".dot")
+            .selectAll(".dot-satisfied")
             .attr("cx", (d) => newXScale(d.id))
             .attr("cy", (d) => yScale(d.distance));
+          svg
+            .selectAll(".label-satisfied")
+            .attr("x", (d) => newXScale(d.id))
+            .attr("y", (d) => yScale(d.distance) - 10);
+          svg
+            .selectAll(".dot-not-satisfied")
+            .attr("cx", (d) => newXScale(d.id))
+            .attr("cy", (d) => yScale(d.distance));
+          svg
+            .selectAll(".label-not-satisfied")
+            .attr("x", (d) => newXScale(d.id))
+            .attr("y", (d) => yScale(d.distance) - 10);
         }
       });
     </script>
