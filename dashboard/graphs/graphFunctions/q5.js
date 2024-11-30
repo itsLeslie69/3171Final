@@ -9,20 +9,16 @@ export default function getGraph5 () {
            var height = 500
    
            var padding = 100
-           var barWidth = 15
    
            var innerWidth = width - padding
            var innerHeight = height - padding
 
-           var color = ["#F58634", "#54433A"]
-
+           var color = ["#F58634",  "#00C0A3", "#54433A"]
 
            // Appending svg
            var graph = d3.select('#q5Container')
                            .append('svg')
                            .attr('id', 'q5SVG')
-/*                            .attr('height', height)
-                           .attr('width', width) */
                            .attr('viewBox',
                             "0 0 " + width + " " + height
                         )
@@ -49,6 +45,7 @@ export default function getGraph5 () {
            }
    
            seatClasses = getClasses()  // Storing the classes
+           
    
            //console.log(seatClasses)
            // Making new array with ratings grouped by satisfaction
@@ -65,6 +62,7 @@ export default function getGraph5 () {
                    }
                }
            }
+
        
            // Calucating averages
            function calculateAvg (arr) { // Takes an array, adds all the values, performs avg calculation when loop ends
@@ -90,10 +88,28 @@ export default function getGraph5 () {
                                                                            // Final averages pushed to graphData
            //console.log(graphData)
            // Array now structured as [] => ['Eco, 3.12'] etc
+
+           // Geting min and max values of each class for multi-value display
+           // Pushing Eco min
+           graphData[0].push(Math.min(...groupedData[0].slice(1)))
+           // Pushing Eco max
+           graphData[0].push(Math.max(...groupedData[0].slice(1)))
+           // Pushing Business min
+           graphData[1].push(Math.min(...groupedData[1].slice(1)))
+           // Pushing Business max
+           graphData[1].push(Math.max(...groupedData[1].slice(1)))
+           // Pusing Eco Plus min
+           graphData[2].push(Math.min(...groupedData[2].slice(1)))
+           // Pushing Eco Plus max
+           graphData[2].push(Math.max(...groupedData[2].slice(1)))
+
+           //console.log(graphData)
+
+
    
            // x-axis scale
            var xScale = d3.scaleBand()
-                           .domain([graphData[0][0], graphData[1][0], graphData[2][0]])  
+                           .domain(seatClasses)  
                            .range([0, innerWidth])
                            .padding([0.2])
            var xAxis = d3.axisBottom()
@@ -136,55 +152,36 @@ export default function getGraph5 () {
                 .attr("y", -30)
                 .attr("text-anchor", "middle")
                 .text("Passenger Satisfaction by Class");
-   
-           var graphAppend = graphGroup.selectAll('.gBar')
-                                   .data(graphData)
-                                   .enter()
-                                   .append('g')
-                                        .attr('class', 'gBar');
 
-            // Brush handler functions
-/*             function updateChart (event) {
-                var selection = event.selection
-    
-                d3.select('#q5SVG').selectAll('.bar').classed("selected", function (d) {
-                    return isBrushed (selection, xScale(d[0]), yScale(d[1]))
-    
-                })
-    
-            }
-    
-            function isBrushed (edge, x, y) {
-                var x0 = edge[0][0],
-                    x1 = edge[1][0],
-                    y0 = edge[0][1],
-                    y1 = edge[1][1]
-                    return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
-            }
-    
-            // Calling brush
-            graph.call(
-                d3.brush()
-                    .extent([[0, 0], [width, height]])
-                    .on('start brush', updateChart)
-            ) */
-
-
-                graphAppend.append("rect")
-                    .attr('class', 'bar')
+                graphGroup.append('g')
+                    .selectAll('g')
+                    .data(graphData)
+                    .join('g')
+                    //.attr('transform', (d, i) => `translate(${xScale(d[0])}, 0)`)  
+                    .selectAll('rect')
+                    .data(d => {
+                        // Flatten ticket prices into individual data items for each rect element
+                        return [
+                            { class: d[0], satisfaction: d[1] },
+                            { class: d[0], satisfaction: d[2]  },
+                            { class: d[0], satisfaction: d[3]  },
+                        ];
+                    })
+                    .join('rect')
+                    .attr('fill', (d, i) => {
+                        return color[i - 1]
+                    }) // Colour
+                    .attr('x', d => xScale(d.class))  // Position each ticket price with reference to the group
+                    .attr('y', d => yScale(parseFloat(d.satisfaction)))          // Set y position based on the price
+                    .attr('width', xScale.bandwidth())// Set width
+                    .attr('height', d => {return innerHeight - yScale(parseFloat(d.satisfaction))}) // Set height
                     .on('mouseover', function (event, d) {
-                       appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, parseFloat(d[1]).toFixed(2), -10, -100, 'Satisfaction')
+                        appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, parseFloat(d.satisfaction).toFixed(2), -10, -60, 'Satisfaction')
+                            console.log(d)
+                        })
+                        .on('mouseout', function () {
+                            d3.selectAll('.toolTip').remove();
+                        })
+
                         
-                    })
-                    .on('mouseout', function () {
-                        d3.selectAll('.toolTip').remove();
-                    })
-                    .attr("x", (z) => { return xScale(z[0]) }) // As attribute callbacks iterate, corresponding index for seat class name or avg are referenced as return values
-                    .attr('y', (z) => { return yScale(z[1]) })
-                    .attr('width', xScale.bandwidth())
-                    .transition()
-                    .duration(2000)
-                    .attr('height', (z) => { return innerHeight - yScale(z[1]) })
-                    .attr("fill", (d, i) => color[i % color.length])
-                       
                 })}

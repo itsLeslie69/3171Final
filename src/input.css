@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 body {
+    background-color: #F5F5DC;
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 h1, h2, h3, h4, a, p {
@@ -46,6 +48,10 @@ tr {
 }
 
 
+path.domain {
+    opacity: 1;
+}
+
 /* Base Rect styles */
 
 rect {
@@ -78,6 +84,17 @@ path:hover {
 
 /* Tooltip styles */
 
+.tooltip {
+    position: absolute;
+    background-color: rgb(242, 11, 11);
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    display: none;
+  }
+
 .toolTipBackground {
     background-color: #36454F;
     border-radius: 10px;
@@ -102,4 +119,9 @@ path:hover {
     text-align: center;
     color: white;
     font-size: 1rem;
+}
+
+.axis-label {
+    font-size: 1.2rem;
+    font-weight: 500;
 }

@@ -5,7 +5,7 @@ export default async function returnLoyalCustomers () {
 
     var loyalCustNum = data.filter((record) => record["Customer Type"] == "Loyal Customer").length
     
-    return loyalCustNum
+    return new Promise ((resolve) => {resolve(loyalCustNum)})
 
 }
 
