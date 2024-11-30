@@ -46,7 +46,7 @@ export default async function getGraph3 () {
     var graphGroup = graph.append('g')
                             .attr('class', 'gGroup')
                             .attr('id', 'gGroup')
-                            .attr("transform", "translate(50, 50)")
+                            .attr("transform", "translate(50, 10)")
     
     d3.csv('/data/customer_satisfaction.csv').then((data) => {
 
@@ -115,28 +115,24 @@ export default async function getGraph3 () {
             //Title  
             graphGroup.append("text")
             .attr("id", "q3Title")
+            .attr('class', 'axis-label')
             .attr("x", innerWidth / 2)
-            .attr("y", -30)
+            .attr("y", 20)
             .attr("text-anchor", "middle")
             .text(getTitle(e.target.selectedIndex));
 
-            d3.select("#q3SVG").selectAll(".path-" + e.target.selectedIndex)
+            d3.select("#q3SVG").selectAll("#path-" + e.target.selectedIndex)
                 .transition()
                 .duration(50)
                 .style('opacity', 1)
 
-            // Select all paths
-            var paths = d3.select("#q3SVG").selectAll("path");
-
-            // Filter for paths that do not match the selected index
-            var invalidPaths = paths.filter(function() {
-            // Extract the class suffix and check if it doesn't match the selectedIndex
-            var classSuffix = d3.select(this).attr("class").split("-").pop();
-            return classSuffix != e.target.selectedIndex; // Compare as a string
-            });
-
-            // Apply styles to the invalid paths
-            invalidPaths.style("opacity", 0.1); // Example style
+            // Select all invalid paths
+            d3.select("#q3SVG").selectAll("path" + ":not(#" + "path-" + e.target.selectedIndex + ")")
+                                .style("opacity", 0.1)
+                                
+            // Ensuring axes labels do not change opacity
+            d3.select("#q3SVG").selectAll("path.domain")
+                                .style('opacity', 1)
 
         }
             // Swtich statement to return data from helper functions
@@ -165,21 +161,23 @@ export default async function getGraph3 () {
                 graph.append('path')
                     .datum(getDataForSelection(i))
                     .attr('d', createAreaChart // Positioning
-                        .x((d) => {return xScale(parseFloat(d.ranking))})
-                        .y0(innerHeight)
+                        .x((d) => {return xScale(parseFloat(d.ranking)) + 0.65})
+                        .y0(innerHeight - 0.65)
                         .y1((d) => {return yScale(parseFloat(d.value))})
                     )
                     .attr('fill', () => {return color[i - 1]}) // Offsetting index due to loop starting at 1
-                    .attr('stroke', '#d3d3d3')
+                    .attr('stroke', '#F5F5DC')
                     .attr('stroke-width', 2.5)
                     .style('opacity', 0.65)
-                    .attr("class", "path-" + i)  
+                    .attr("id", "path-" + i)
+
+                    
             }
                 
         // Appending legend
         const legend = graphGroup.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${250}, 10)`);
+            .attr("transform", `translate(${250}, 45)`);
         // Manually setting and iterating legend text
         // Array order corresponds to colour, which orresponds to area chart data
         ["Check-In", "Booking", "Gate Location", "Service", "Baggage Handling"].forEach((s, v) => {

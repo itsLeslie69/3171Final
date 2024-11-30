@@ -35,7 +35,7 @@ export default function getGraph6 () {
 
     // Appending group container to svg
     var graphGroup = graph.append('g')
-                            .attr("transform", "translate(50, 50)")
+                            .attr("transform", "translate(50, 10)")
     
     d3.csv('../data/customer_satisfaction.csv').then((data) => {
 
@@ -99,7 +99,7 @@ export default function getGraph6 () {
             .join('rect')
             .on('mouseover', function (event, d) {
 
-                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(2), 0, -40, "Cost")
+                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(2), 0, -90, "Cost")
             }).on('mouseout', function () {
                 d3.selectAll('.toolTip').remove()
             })
@@ -122,7 +122,7 @@ export default function getGraph6 () {
         // Legend
         const legend = graphGroup.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${250}, 10)`);
+        .attr("transform", `translate(${250}, 20)`);
 
         ["1st Ticket Price", "2nd Ticket Price", "3rd Ticket Price", "4th Ticket Price"].forEach((s, v) => {
             const legendRow = legend.append("g")

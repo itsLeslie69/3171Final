@@ -113,29 +113,29 @@ export default function getGraph4 () {
             d3.brush()
                 .extent([[50, 50], [490, 470]])
                 .on('start brush', updateChart)
-        )    
+        );    
 
             // Graph title
-            d3.select('#pieContainer')
-            .append("text")
+            svg.append("text")
             .attr("class", "axis-label")
             .attr("x", width / 2)
             .attr("y", 20)
             .attr("text-anchor", "middle")
-            .text("Customer Satisfaction by Total Delay")
+            .text("Departure/Arrival Time Convenience Satisfaction Level");
+
 
            // Labels
            svg.append("text")
-               .attr("class", "axis-label")
-               .attr("x", width / 2)
-               .attr("y", innerHeight + 90)
-               .attr("text-anchor", "middle")
-               .text("Departure/Arrival Time Convenience Satisfaction Level");
+           .attr("class", "axis-label")
+           .attr("x", width / 2)
+           .attr("y", innerHeight + 90)
+           .attr("text-anchor", "middle")
+           .text("Customer Satisfaction by Total Delay");
 
            svg.append("text")
                .attr("class", "axis-label")
                .attr("text-anchor", "middle")
-               .attr("transform", `translate(${20},${height / 2})rotate(-90)`)
+               .attr("transform", `translate(${14},${height / 2})rotate(-90)`)
                .text("Total Delay Minutes");
 
          
