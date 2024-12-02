@@ -1,9 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 import { appendToolTip } from "../../utilities/toolTips.js";
-
-import resetGraph from "./q3Functions/reset.js"
-
+// Importing functions to get category data
 import returnCheckIn from "./q3Functions/checkIn.js"
 import returnBooking from "./q3Functions/booking.js"
 import returnGateLocation from "./q3Functions/booking.js"
@@ -11,16 +9,14 @@ import returnOnBoardService from "./q3Functions/booking.js"
 import returnBaggageHandling from "./q3Functions/booking.js"
 
 export default async function getGraph3 () {
-
+    // Getting data for all categories via async functions
     var checkInData = await returnCheckIn()
     var bookingData = await returnBooking()
     var gateData = await returnGateLocation()
     var serviceData = await returnOnBoardService()
     var baggageData = await returnBaggageHandling()
-
+    // Creating reference to category selection dropdown
     var select = document.getElementById('dropDown')
-
-
     // Defining chart dimensions
     var width = 500
     var height = 500
@@ -29,16 +25,14 @@ export default async function getGraph3 () {
 
     var innerWidth = width - padding
     var innerHeight = height - padding
-
+    // Array for graph colours
     var color = ["#54433A", "#F58634", "#008970", "#00C0A3", "#bba79c"]
 
     // Appending svg
     var graph = d3.select('#q3Container')
                     .append('svg')
-/*                     .attr('height', height)
-                    .attr('width', width) */
                     .attr('id', 'q3SVG')
-                    .attr('viewBox',
+                    .attr('viewBox',    // Making chart responsive
                         "0 0 " + width + " " + height
                     )
     
@@ -49,7 +43,6 @@ export default async function getGraph3 () {
                             .attr("transform", "translate(50, 10)")
     
     d3.csv('/data/customer_satisfaction.csv').then((data) => {
-
         // x-axis scale
         var xScale = d3.scaleLinear()
                         .domain([1, 5])  
@@ -63,7 +56,7 @@ export default async function getGraph3 () {
                         .range([0, innerHeight])
         var yAxis = d3.axisLeft()
                         .scale(yScale)
-        
+        // Calling axes
         graphGroup.append('g')
                     .attr('transform', "translate(0," + innerHeight + ")" )
                     .attr('class', 'xAxis')
@@ -72,8 +65,6 @@ export default async function getGraph3 () {
         graphGroup.append('g')
                     .attr('class', 'yAxis')
                     .call(yAxis)
-
-
         // Labels
         graphGroup.append("text")
             .attr("class", "axis-label")
@@ -161,7 +152,7 @@ export default async function getGraph3 () {
                 graph.append('path')
                     .datum(getDataForSelection(i))
                     .attr('d', createAreaChart // Positioning
-                        .x((d) => {return xScale(parseFloat(d.ranking)) + 0.65})
+                        .x((d) => {return xScale(parseFloat(d.ranking)) + 0.65}) // Ofsetting to prevent stroke and axis overlap
                         .y0(innerHeight - 0.65)
                         .y1((d) => {return yScale(parseFloat(d.value))})
                     )
@@ -170,10 +161,7 @@ export default async function getGraph3 () {
                     .attr('stroke-width', 2.5)
                     .style('opacity', 0.65)
                     .attr("id", "path-" + i)
-
-                    
-            }
-                
+            };
         // Appending legend
         const legend = graphGroup.append("g")
             .attr("class", "legend")
