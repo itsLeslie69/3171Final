@@ -1,114 +1,178 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-import { appendToolTip } from "../../utilities/toolTips.js";
-    
-export default function getGraph1 () {
-    const svgwidth = 500 ;
-    const svgheight = 500;
+export default function renderFlightDistanceChart() {
+  //set dimensions and margins
+  const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+  const width = 1000 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
-    const maxBrushWidth = svgwidth/2;
+  const xScale = d3.scaleLinear().range([0, width]);
+  const yScale = d3.scaleLinear().range([height, 0]);
 
-    const padding = 100;
+  const xAxis = d3.axisBottom(xScale);
+  const yAxis = d3.axisLeft(yScale);
 
-    const inner_width = svgwidth - padding;
-    const inner_height = svgheight - padding;
-    
-
-
-    const svg = d3
+  const svg = d3
     .select("#q1Container")
     .append("svg")
-    .attr("width", svgwidth)
-    .attr("height", svgheight);
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    svg
+  //add a clipping path
+  svg
+    .append("defs")
+    .append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+  //add X-axis title
+  svg
     .append("text")
-    .attr("x", "20")
-    .attr("y", padding / 2)
-    .attr("text-anchor", "start")
-    .style("font-size", "20px")
+    .attr("id", "x-axis-title")
+    .attr("x", width / 2)
+    .attr("y", height + margin.bottom - 10)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .attr("fill", "black")
+    .text("Flight ID");
+
+  //add Y-axis title
+  svg
+    .append("text")
+    .attr("id", "y-axis-title")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 20)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .attr("fill", "black")
     .text("Flight Distance");
 
-    const g = svg
-    .append("g")
-    .attr("transform", `translate(${padding-20}, ${padding-20})`);
+  svg.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
+  svg.append("g").attr("class", "y axis");
 
+  const line = d3
+    .line()
+    .x((d) => xScale(d.id))
+    .y((d) => yScale(d.distance));
 
-    //load the data from the external file
-    d3.csv("../data/customer_satisfaction.csv").then((data) => {
-        // Extract the Flight Distance column
-        const flightDistances = data.map((d) => +d["Flight Distance"]);
-        //render chart start
-        //console.log(flightDistances);
+  //tooltip container
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "1px solid black")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+    .style("pointer-events", "none")
+    .style("opacity", 0);
 
-            
-        //create scales for our data (ranges and domains allowing us to visualize data)
-        const xscale = d3
-            .scaleLinear()
-            //this domain on the x axis represents the amount of data points we are looking at
-            .domain([0, flightDistances.length - 1])
-            //the range for the size of our graph
-            .range([0, inner_width]);
+  d3.csv("../data/customer_satisfaction.csv").then((data) => {
+    const parsedData = data.map((d, i) => ({
+      id: i,
+      distance: +d["Flight Distance"],
+      satisfied: d["satisfaction"] === "satisfied",
+    }));
 
-            const yscale = d3
-            .scaleLinear()
-            .domain([0, d3.max(flightDistances)]) // Low at bottom, high at top
-            .range([inner_height, 0]);
-        
+    const satisfiedData = parsedData.filter((d) => d.satisfied);
+    const notSatisfiedData = parsedData.filter((d) => !d.satisfied);
 
-        //creating the axis
-        //the data.length on line 78 defines how many ticks there will be
-        //without this it will not show numbers 0 to 98 on our chart!
-        const xaxis = d3.axisBottom(xscale).ticks(Math.min(flightDistances.length, 10));
+    xScale.domain([0, parsedData.length + 1]);
+    yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
 
-        //this creates a y axis on the left side of the chart
-        //ticks(5) tells us there are 8 tick marks on the x axis
-        const yaxis = d3.axisLeft(yscale).ticks(8);
-    
-        //adding the axis to the graph with .append()
-        //0 represents the x axis and inner height makes sure the x axis starts at the bottom of the
-        //chart for proper rendering
-        g.append("g")
-            .attr("transform", `translate(0,${inner_height})`)
-            //call renders the x axis when we are done
-            .call(xaxis);
-    
-        //we now add the y axis to our graph
-        g.append("g").call(yaxis);
+    //satisfied line
+    svg
+      .append("g")
+      .attr("clip-path", "url(#clip)")
+      .append("path")
+      .datum(satisfiedData)
+      .attr("class", "line satisfied")
+      .attr("d", line)
+      .attr("stroke", "green")
+      .attr("fill", "none");
 
-        //creating a line for our linear graph
-        const line = d3
-            .line()
-            //iterate through the values on the x scale with an arrow function
-            .x((d, i) => xscale(i))
-            .y((d) => yscale(d));
+    //not satisfied line
+    svg
+      .append("g")
+      .attr("clip-path", "url(#clip)")
+      .append("path")
+      .datum(notSatisfiedData)
+      .attr("class", "line not-satisfied")
+      .attr("d", line)
+      .attr("stroke", "red")
+      .attr("fill", "none");
 
-        //add our newly created line
-        g.append("path")
-        .datum(flightDistances)
-        .attr("fill", "none")
-        .attr("stroke", "blue")
-        .attr("stroke-width", 2)
-        .attr("d", line);
-   
-        //add circles for each data point
-        g.selectAll("circle")
-            .data(flightDistances)
-            .join("circle")
-            .style("opacity", "60%")
+    //satisfied points
+    svg
+      .append("g")
+      .attr("clip-path", "url(#clip)")
+      .selectAll(".dot-satisfied")
+      .data(satisfiedData)
+      .join("circle")
+      .attr("class", "dot-satisfied")
+      .attr("cx", (d) => xScale(d.id))
+      .attr("cy", (d) => yScale(d.distance))
+      .attr("r", 5)
+      .attr("fill", "green")
+      .on("mouseover", function (event, d) {
+        tooltip
+          .style("opacity", 1)
+          .html(
+            `<strong>Flight ID:</strong> ${d.id}<br>
+            <strong>Distance:</strong> ${d.distance}<br>
+            <strong>Status:</strong> Satisfied`
+          )
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 10}px`);
+        d3.select(this).attr("r", 8).attr("fill", "blue");
+      })
+      .on("mousemove", function (event) {
+        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 10}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("opacity", 0);
+        d3.select(this).attr("r", 5).attr("fill", "green");
+      });
 
-            .attr("id", "points_on_chart")
-            .attr("cx", (d, i) => xscale(i))
-            .attr("cy", (d) => yscale(d))
-            //make the radius of each point (circle) 8
-            .attr("r", 2)
-            .attr("fill", "red")
-            .on("mouseover", function (event, d) {
-                appendToolTip(g, this.cx.baseVal.value, this.cy.baseVal.value, d, 0, d.toFixed(2), -50, -70, 'Distance')
-            })
-            .on('mouseout', function () {
-                d3.selectAll('.toolTip').remove();
-            })
-        
-    })
+    //not satisfied points
+    svg
+      .append("g")
+      .attr("clip-path", "url(#clip)")
+      .selectAll(".dot-not-satisfied")
+      .data(notSatisfiedData)
+      .join("circle")
+      .attr("class", "dot-not-satisfied")
+      .attr("cx", (d) => xScale(d.id))
+      .attr("cy", (d) => yScale(d.distance))
+      .attr("r", 5)
+      .attr("fill", "red")
+      .on("mouseover", function (event, d) {
+        tooltip
+          .style("opacity", 1)
+          .html(
+            `<strong>Flight ID:</strong> ${d.id}<br>
+            <strong>Distance:</strong> ${d.distance}<br>
+            <strong>Status:</strong> Not Satisfied`
+          )
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 10}px`);
+        d3.select(this).attr("r", 8).attr("fill", "blue");
+      })
+      .on("mousemove", function (event) {
+        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 10}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("opacity", 0);
+        d3.select(this).attr("r", 5).attr("fill", "red");
+      });
+
+    svg.select(".x.axis").call(xAxis);
+    svg.select(".y.axis").call(yAxis);
+  });
 }
