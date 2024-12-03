@@ -1,7 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export default function renderFlightDistanceChart() {
-  //set dimensions and margins
+  //setting dimensions and margins
   const margin = { top: 20, right: 30, bottom: 50, left: 100 };
   const width = 1000 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
@@ -16,12 +16,20 @@ export default function renderFlightDistanceChart() {
     .select("#q1Container")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom);
+
+  //adding groups for axes and zoomable area
+  const axesGroup = svg
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+  const focus = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .attr("clip-path", "url(#clip)");
+
   //add a clipping path
-  svg
+  focus
     .append("defs")
     .append("clipPath")
     .attr("id", "clip")
@@ -30,7 +38,7 @@ export default function renderFlightDistanceChart() {
     .attr("height", height);
 
   //add X-axis title
-  svg
+  axesGroup
     .append("text")
     .attr("id", "x-axis-title")
     .attr("x", width / 2)
@@ -41,7 +49,7 @@ export default function renderFlightDistanceChart() {
     .text("Flight ID");
 
   //add Y-axis title
-  svg
+  axesGroup
     .append("text")
     .attr("id", "y-axis-title")
     .attr("transform", "rotate(-90)")
@@ -52,8 +60,8 @@ export default function renderFlightDistanceChart() {
     .attr("fill", "black")
     .text("Flight Distance");
 
-  svg.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
-  svg.append("g").attr("class", "y axis");
+  const xAxisGroup = axesGroup.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
+  const yAxisGroup = axesGroup.append("g").attr("class", "y axis");
 
   const line = d3
     .line()
@@ -86,10 +94,8 @@ export default function renderFlightDistanceChart() {
     xScale.domain([0, parsedData.length + 1]);
     yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
 
-    //satisfied line
-    svg
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    //the green path (satisfied)
+    const satisfiedPath = focus
       .append("path")
       .datum(satisfiedData)
       .attr("class", "line satisfied")
@@ -97,10 +103,8 @@ export default function renderFlightDistanceChart() {
       .attr("stroke", "green")
       .attr("fill", "none");
 
-    //not satisfied line
-    svg
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    //the red path (not satisfied)
+    const notSatisfiedPath = focus
       .append("path")
       .datum(notSatisfiedData)
       .attr("class", "line not-satisfied")
@@ -108,10 +112,7 @@ export default function renderFlightDistanceChart() {
       .attr("stroke", "red")
       .attr("fill", "none");
 
-    //satisfied points
-    svg
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    const satisfiedDots = focus
       .selectAll(".dot-satisfied")
       .data(satisfiedData)
       .join("circle")
@@ -140,10 +141,7 @@ export default function renderFlightDistanceChart() {
         d3.select(this).attr("r", 5).attr("fill", "green");
       });
 
-    //not satisfied points
-    svg
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    const notSatisfiedDots = focus
       .selectAll(".dot-not-satisfied")
       .data(notSatisfiedData)
       .join("circle")
@@ -172,7 +170,51 @@ export default function renderFlightDistanceChart() {
         d3.select(this).attr("r", 5).attr("fill", "red");
       });
 
-    svg.select(".x.axis").call(xAxis);
-    svg.select(".y.axis").call(yAxis);
+    xAxisGroup.call(xAxis);
+    yAxisGroup.call(yAxis);
+
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 10])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", zoomed);
+
+    focus
+      .append("rect")
+      .attr("class", "zoom")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .lower()
+      .call(zoom);
+
+    function zoomed({ transform }) {
+      const newXScale = transform.rescaleX(xScale);
+
+      xAxisGroup.call(xAxis.scale(newXScale));
+
+      satisfiedPath.attr(
+        "d",
+        d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+      );
+
+      notSatisfiedPath.attr(
+        "d",
+        d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+      );
+
+      satisfiedDots
+        .attr("cx", (d) => newXScale(d.id))
+        .attr("cy", (d) => yScale(d.distance));
+
+      notSatisfiedDots
+        .attr("cx", (d) => newXScale(d.id))
+        .attr("cy", (d) => yScale(d.distance));
+    }
   });
 }
+
