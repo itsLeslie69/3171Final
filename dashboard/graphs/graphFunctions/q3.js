@@ -1,9 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 import { appendToolTip } from "../../utilities/toolTips.js";
-
-import resetGraph from "./q3Functions/reset.js"
-
+// Importing functions to get category data
 import returnCheckIn from "./q3Functions/checkIn.js"
 import returnBooking from "./q3Functions/booking.js"
 import returnGateLocation from "./q3Functions/booking.js"
@@ -11,34 +9,30 @@ import returnOnBoardService from "./q3Functions/booking.js"
 import returnBaggageHandling from "./q3Functions/booking.js"
 
 export default async function getGraph3 () {
-
+    // Getting data for all categories via async functions
     var checkInData = await returnCheckIn()
     var bookingData = await returnBooking()
     var gateData = await returnGateLocation()
     var serviceData = await returnOnBoardService()
     var baggageData = await returnBaggageHandling()
-
+    // Creating reference to category selection dropdown
     var select = document.getElementById('dropDown')
-
     // Defining chart dimensions
     var width = 500
     var height = 500
 
     var padding = 100
-    var barWidth = 15
 
     var innerWidth = width - padding
     var innerHeight = height - padding
-
-    var color = ["#F58634", "#54433A"]
+    // Array for graph colours
+    var color = ["#54433A", "#F58634", "#008970", "#00C0A3", "#bba79c"]
 
     // Appending svg
     var graph = d3.select('#q3Container')
                     .append('svg')
-/*                     .attr('height', height)
-                    .attr('width', width) */
                     .attr('id', 'q3SVG')
-                    .attr('viewBox',
+                    .attr('viewBox',    // Making chart responsive
                         "0 0 " + width + " " + height
                     )
     
@@ -46,15 +40,16 @@ export default async function getGraph3 () {
     var graphGroup = graph.append('g')
                             .attr('class', 'gGroup')
                             .attr('id', 'gGroup')
-                            .attr("transform", "translate(50, 50)")
-    
+                            .attr("transform", "translate(50, 10)")
+
     d3.csv('../data/customer_satisfaction.csv').then((data) => {
 
+
         // x-axis scale
-        var xScale = d3.scaleBand()
-                        .domain([1, 2, 3, 4, 5])  
+        var xScale = d3.scaleLinear()
+                        .domain([1, 5])  
                         .range([0, innerWidth])
-                        .padding([0.2])
+                        
         var xAxis = d3.axisBottom()
                         .scale(xScale)
         // y-axis
@@ -63,7 +58,7 @@ export default async function getGraph3 () {
                         .range([0, innerHeight])
         var yAxis = d3.axisLeft()
                         .scale(yScale)
-        
+        // Calling axes
         graphGroup.append('g')
                     .attr('transform', "translate(0," + innerHeight + ")" )
                     .attr('class', 'xAxis')
@@ -72,8 +67,6 @@ export default async function getGraph3 () {
         graphGroup.append('g')
                     .attr('class', 'yAxis')
                     .call(yAxis)
-
-
         // Labels
         graphGroup.append("text")
             .attr("class", "axis-label")
@@ -87,18 +80,58 @@ export default async function getGraph3 () {
             .attr("text-anchor", "middle")
             .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
             .text("Number of Respondents (n)");      
+        
+        // Handling dropdown changing category, changing data styles and title    
+       select.onchange = function (e) {
+            // Function to remove title on dropdown input
+            function removeTitle () {
+                let tempTitle = document.getElementById('q3Title')
+                if (tempTitle) {
+                    tempTitle.remove()
+                }
+            }
+            // Removing title after dropdown changes
+            removeTitle()
             
-        //Title
-        graphGroup.append("text")
-            .attr("class", "axis-label")
+            // Function to format title based off of dropdown input
+            function getTitle(index) {
+                switch (index) {
+                    case 1: return "Reported Check-In Satisfaction"
+                    case 2: return "Reported Booking Ease Satisfaction"
+                    case 3: return "Reported Satisfaction"
+                    case 4: return "Reported Gate Location Satisfaction"
+                    case 5: return "Reported Baggage Handling Satisfaction"
+                    default: return "Overview"
+                }
+            }
+
+            //Title  
+            graphGroup.append("text")
+            .attr("id", "q3Title")
+            .attr('class', 'axis-label')
             .attr("x", innerWidth / 2)
-            .attr("y", -30)
+            .attr("y", 20)
             .attr("text-anchor", "middle")
-            .text("Reported Satisfaction By Category");
+            .text(getTitle(e.target.selectedIndex));
 
-        select.onchange = function (e) {
-            resetGraph()
+            d3.select("#q3SVG").selectAll("#path-" + e.target.selectedIndex)
+                .transition()
+                .duration(50)
+                .style('opacity', 1)
 
+            // Select all invalid paths
+            d3.select("#q3SVG").selectAll("path" + ":not(#" + "path-" + e.target.selectedIndex + ")")
+                                .style("opacity", 0.1)
+                                
+            // Ensuring axes labels do not change opacity
+            d3.select("#q3SVG").selectAll("path.domain")
+                                .style('opacity', 1)
+
+        }
+            // Swtich statement to return data from helper functions
+            // Each function corresponds to each required category of information
+            // Each helper function returns an array of objects
+            // which store a ranking as well as the number of respondents for that ranking
             function getDataForSelection(index) {
                 switch (index) {
                     case 1: return checkInData
@@ -109,68 +142,47 @@ export default async function getGraph3 () {
                     default: return []
                 }
             }
-
-            var graph = graphGroup.selectAll('.graph')
-                            .data(getDataForSelection(e.target.selectedIndex))
-                            .enter()
-                            .append('g')
+            // Loop to create area charts
+            for (let i = 1; i < 6; i++) {
+                var graph = graphGroup.selectAll('.graph')
+                .data([getDataForSelection(i)]) // Returning values at each iteration, correspond to data
+                .enter()
+            
+                // Area chart creation
+                var createAreaChart = d3.area()
                 
-            graph.append("rect")
-                    .attr('class', 'bar')
-                    .on('mouseover', function (event, d) {
-/*                         appendStackedBarToolTip (
-                            graphGroup, 
-                            500, 
-                            xScale(parseInt(d.ranking)) + 15, 
-                            d, 
-                            [], 
-                            3, 
-                            "n = " + d.value,
-                            90,
-                            [],
-                            (innerHeight / 2) - (d.value / 2) - 130
-                        ) */
+                graph.append('path')
+                    .datum(getDataForSelection(i))
+                    .attr('d', createAreaChart // Positioning
+                        .x((d) => {return xScale(parseFloat(d.ranking)) + 0.65}) // Ofsetting to prevent stroke and axis overlap
+                        .y0(innerHeight - 0.65)
+                        .y1((d) => {return yScale(parseFloat(d.value))})
+                    )
+                    .attr('fill', () => {return color[i - 1]}) // Offsetting index due to loop starting at 1
+                    .attr('stroke', '#F5F5DC')
+                    .attr('stroke-width', 2.5)
+                    .style('opacity', 0.65)
+                    .attr("id", "path-" + i)
+            };
+        // Appending legend
+        const legend = graphGroup.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${250}, 45)`);
+        // Manually setting and iterating legend text
+        // Array order corresponds to colour, which orresponds to area chart data
+        ["Check-In", "Booking", "Gate Location", "Service", "Baggage Handling"].forEach((s, v) => {
+            const legendRow = legend.append("g")
+                .attr("transform", `translate(0, ${v * 20})`)
+                
+            legendRow.append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", (d, i) => color[v]);
 
-                        appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, d.value, -30, -100, 'n')    
-                    })
-                    .on('mouseout', function () {
-                        d3.selectAll('.toolTip').remove();
-                    })
-                    .attr("x", (d) => { return xScale(parseInt(d.ranking)) }) 
-                    .transition()
-                        .delay(50)
-                        .duration(1500)
-                    .attr('y', (d) => { return yScale(d.value) })
-                    .attr('width', xScale.bandwidth())
-                    .attr('height', (d) => { return innerHeight - yScale(d.value) })
-                    .attr("fill", (d, i) => color[i % color.length])
-                }
-
-                // Brush handler functions
- /*                function updateChart (event) {
-                    var selection = event.selection
-                    d3.select('#q3SVG').selectAll('.bar').classed("selected", function (d) {
-                        console.log(d)
-                        return isBrushed (selection, xScale(Number(d.ranking)), yScale(d.value))
-                    })
-        
-                }
-        
-                function isBrushed (edge, x, y) {
-                    var x0 = edge[0][0],
-                        x1 = edge[1][0],
-                        y0 = edge[0][1],
-                        y1 = edge[1][1]
-                        return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
-                }
-        
-                // Calling brush
-                d3.select('#q3SVG').call(
-                    d3.brush()
-                        .extent([[0, 0], [500, 500]])
-                        .on('start brush', updateChart)
-                )     */
-
-
+            legendRow.append("text")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text(s);
+        });
     })
 }
