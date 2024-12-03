@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 body {
+    background-color: #F5F5DC;
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 h1, h2, h3, h4, a, p {
@@ -45,7 +47,6 @@ tr {
     border-bottom: 1px black solid;
 }
 
-
 /* Base Rect styles */
 
 rect {
@@ -58,6 +59,7 @@ rect:hover {
 }
 
 /* Base path styles */
+/* Hover effects */
 
 path {
     opacity: 0.8;
@@ -84,22 +86,14 @@ path:hover {
     padding: 5%;
 }
 
-.toolTipTitle {
-    color: white;
-    text-align: center;
-    font-weight: 400;
-    font-size: 1.5rem;
-}
-
-.toolTipText {
-    color: white;
-    text-align: left;
-    margin-left: 5%;
-    font-size: 1rem;
-}
-
 .tipSingleValue {
     text-align: center;
     color: white;
     font-size: 1rem;
+}
+
+/* Graph axis text */
+
+g.tick text {
+    font-size: 0.8rem;
 }

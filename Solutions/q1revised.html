@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Flight Distance</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      svg {
+        font-size: 10px;
+        background-color: #f9f9f9;
+      }
+
+      .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 1.5;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .tooltip {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 12px;
+        pointer-events: none;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flight Distance</h1>
+    <div id="chart-container"></div>
+    <div class="tooltip" id="tooltip"></div>
+    <script>
+      //set dimensions and margins to create distance between other graphs on our index.html
+      const margin = { top: 20, right: 100, bottom: 50, left: 100 };
+      const width = 1600;
+      const height = 500;
+      const padding = 50;
+
+      //initialize the scales
+      const xScale = d3.scaleLinear().range([0, width]);
+      const yScale = d3.scaleLinear().range([height, 0]);
+
+      //generate our axis with the scales
+      const xAxis = d3.axisBottom(xScale);
+      const yAxis = d3.axisLeft(yScale);
+
+      //create an svg container with the id chart-container
+      const svg = d3
+        .select("#chart-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Add a title to the x-axis
+      svg
+        .append("text")
+        .attr("id", "x-axis-title")
+        .attr("x", (width - margin.left - margin.right) / 2 + margin.left) // Centered horizontally
+        .attr("y", height + 38) // Slightly below the x-axis
+        .attr("text-anchor", "middle") // Center align the text
+        .attr("font-size", "20px")
+        .attr("fill", "black")
+        .text("Flight ID");
+
+      //adding a title on the y-axis
+      svg
+        .append("text")
+        .attr("id", "y-axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -padding / 2 - 20)
+        .text("Flight Distance")
+        .style("font-weight", "bold")
+        .style("font-size", "20px")
+        .style("fill", "black");
+
+      svg
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", `translate(0,${height})`);
+      svg.append("g").attr("class", "y axis");
+
+      //create our line path
+      const line = d3
+        .line()
+        .x((d, i) => xScale(d.id))
+        .y((d) => yScale(d.distance));
+
+      //select the tooltip
+      const tooltip = d3.select("#tooltip");
+
+      //load the data from the external data file
+      d3.csv("../data/customer_satisfaction.csv").then((data) => {
+        //parse data from our files
+        const parsedData = data.map((d, i) => ({
+          id: i,
+          distance: +d["Flight Distance"],
+        }));
+
+        //set domains
+        xScale.domain([0, parsedData.length - 1]);
+        yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
+
+        //append the line
+        const path = svg
+          .append("path")
+          .datum(parsedData)
+          .attr("class", "line")
+          .attr("d", line);
+
+        //create circles
+        svg
+          .selectAll(".dot")
+          .data(parsedData)
+          .join("circle")
+          .attr("class", "dot")
+          .attr("cx", (d) => xScale(d.id))
+          .attr("cy", (d) => yScale(d.distance))
+          .attr("r", 4)
+          .attr("fill", "red")
+          .on("mouseover", function (event, d) {
+            console.log(d);
+            const tooltip = d3.select("#tooltip");
+            tooltip
+              .style("display", "block")
+              .style("left", `${event.pageX + 10}px`)
+              .style("top", `${event.pageY - 10}px`)
+              .text(`Flight Distance: ${d.distance}`);
+            d3.select(this).attr("fill", "blue").attr("r", 13);
+          })
+          .on("mouseout", () => {
+            tooltip.style("display", "none");
+          });
+
+        //append axes
+        svg.select(".x.axis").call(xAxis);
+        svg.select(".y.axis").call(yAxis);
+
+        const zoom = d3
+          .zoom()
+          .scaleExtent([1, 10])
+          .translateExtent([
+            [0, 0],
+            [width, height],
+          ])
+          .on("zoom", zoomed);
+
+        svg
+          .append("rect")
+          .attr("width", width)
+          .attr("height", height)
+          .style("fill", "none")
+          .style("pointer-events", "all")
+          .call(zoom);
+
+        //zoom
+        function zoomed({ transform }) {
+          //rescale x-axis
+          const newXScale = transform.rescaleX(xScale);
+
+          //update axes
+          svg.select(".x.axis").call(xAxis.scale(newXScale));
+
+          //update lines
+          path.attr(
+            "d",
+            line.x((d) => newXScale(d.id))
+          );
+
+          //update points
+          svg
+            .selectAll(".dot")
+            .attr("cx", (d) => newXScale(d.id))
+            .attr("cy", (d) => yScale(d.distance));
+        }
+      });
+    </script>
+  </body>
+</html>

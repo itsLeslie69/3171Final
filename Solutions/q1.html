@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../src/output.css" />
     <title>Flight Distance Chart</title>
     <style>
       svg {
@@ -11,11 +12,11 @@
 
       .tooltip {
         position: absolute;
-        background-color: white;
+        background-color: rgb(242, 11, 11);
         border: 1px solid black;
         border-radius: 4px;
-        padding: 5px;
-        font-size: 12px;
+        padding: 100px;
+        font-size: 20px;
         pointer-events: none;
         display: none;
       }
@@ -25,6 +26,7 @@
   <body>
     <div id="line_chart"></div>
     <div class="tooltip" id="tooltip"></div>
+    <div class="brush"></div>
 
     <script type="module">
       import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
@@ -40,9 +42,15 @@
       });
 
       function renderChart(data) {
-        //by using window.innerWidth we are allowing our graph to better fit each screen based on the browser
+        //by using window.innerWidth we are allowing out graph to better fit eatch screen based on the browser
         const svgwidth = window.innerWidth;
         const svgheight = window.innerHeight / 2;
+
+        const maxBrushWidth = svgwidth / 2;
+
+        var width = svgwidth / 2;
+        var height = svgheight / 2;
+
         const padding = 50;
 
         const svg = d3
@@ -73,6 +81,7 @@
           .domain([0, data.length - 1])
           //the range for the size of our graph
           .range([0, inner_width]);
+        //the xscale is able to transform pixels back to index values
 
         const yscale = d3
           .scaleLinear()
@@ -119,11 +128,27 @@
           .data(data)
           .join("circle")
           .style("opacity", "60%")
+
+          .attr("id", "points_on_chart")
           .attr("cx", (d, i) => xscale(i))
           .attr("cy", (d) => yscale(d))
           //make the radius of each point (circle) 8
-          .attr("r", 4)
+          .attr("r", 2)
           .attr("fill", "red")
+          .on("mouseover", function () {
+            d3.select(this).attr("fill", "blue").attr("r", 13); // Change color to blue on hover
+          })
+          .on("mouseout", function () {
+            d3.select(this)
+              .attr("fill", "red")
+              .attr("r", 2) // Revert color to red when mouse leaves
+
+              .attr("cx", (d, i) => xscale(i))
+              .attr("cy", (d) => yscale(d))
+              //make the radius of each point (circle) 8
+              .attr("r", 4)
+              .attr("fill", "red");
+          })
           //when the user hovers over the color changes
           .on("mouseover", function (event, d) {
             const tooltip = d3.select("#tooltip");
@@ -162,6 +187,65 @@
           //we will make the font size 11px
           .style("font-size", "11px")
           .style("fill", "black");
+
+        const brush = d3
+          .brushX()
+          .extent([
+            [0, 0],
+            [svgwidth, svgheight - svgheight / 10],
+          ])
+          .on("start brush end", (event) => {
+            if (event.selection) {
+              //getting the index that is overlayed
+              const [x0, x1] = event.selection;
+              const indexSelection = [xscale.invert(x0), xscale.invert(x1)]; // Data range
+              console.log("Index Selection:", indexSelection);
+
+              //select brushes and resize circles within the brush range
+              g.selectAll("circle")
+                .attr("r", (d, i) =>
+                  i >= Math.floor(indexSelection[0]) - 2 &&
+                  i <= Math.ceil(indexSelection[1] - 4)
+                    ? "10"
+                    : "5"
+                )
+                //change circle colors that are brushed over
+                .attr("fill", (d, i) =>
+                  i >= Math.floor(indexSelection[0]) - 2 &&
+                  i <= Math.ceil(indexSelection[1] - 4)
+                    ? "orange"
+                    : "red"
+                );
+              //select all elements that are brushed over and make the labels bigger
+              g.selectAll(".label").style("font-size", (d, i) =>
+                i >= Math.floor(indexSelection[0]) - 3 &&
+                i <= Math.ceil(indexSelection[1]) - 4
+                  ? "15px"
+                  : "10px"
+              );
+            } else {
+              // Reset all circles if no selection
+              g.selectAll("circle").attr("r", 2).attr("fill", "red");
+            }
+          });
+
+        //name for brush container
+        //create or select the brush container based on if exists or not
+        const movableGreyBox = svg.select(".brush");
+
+        if (movableGreyBox.empty()) {
+          //if it doesnt exist we can add it otherwise we don't want to create more
+          //and more grey boxes creating disorganization and distress for users
+          svg
+            .append("g")
+            .attr("class", "brush")
+            .call(brush)
+            //with brush.move the [0, 100] keeps a predefined brush area (grey box)
+            //in your chart so it will start at 0 to 100 on the x axis
+            .call(brush.move, [0, 0 + maxBrushWidth])
+            .select(".overlay")
+            .style("pointer-events", "none"); // Disable pointer events by default
+        }
       }
     </script>
   </body>

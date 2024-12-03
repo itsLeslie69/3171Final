@@ -2,7 +2,7 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
                                 // Tooltip container, x co-ordindate, y co-ordindate, data, offset start, lone field to display, offests, additional display text
 export function appendToolTip (container, xPos, height, dataParam, reverseValue = 0, singleField = "", xOffset = 0, yOffset = 0, fieldText = "") {
                                 // reverseValue is never used - remove?
-    //console.log(dataParam)
+    //console.log('tooltip used!')
 
     // Append a foreignObject using d3 as div and g elements will not display
     // foreignObject overrides d3 styles, allowing for a div-like container
