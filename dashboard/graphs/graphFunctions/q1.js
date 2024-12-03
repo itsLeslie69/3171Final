@@ -2,12 +2,22 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export default function renderFlightDistanceChart() {
   //setting dimensions and margins
-  const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+/*   const margin = { top: 20, right: 30, bottom: 50, left: 100 };
   const width = 1000 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  const height = 500 - margin.top - margin.bottom; */
 
-  const xScale = d3.scaleLinear().range([0, width]);
-  const yScale = d3.scaleLinear().range([height, 0]);
+  const color = ["#008970", "#F58634"]
+
+  var width = 450
+  var height = 450
+
+  var padding = 100
+
+  var innerWidth = width - padding
+  var innerHeight = height - padding
+
+  const xScale = d3.scaleLinear().range([0, innerWidth]);
+  const yScale = d3.scaleLinear().range([innerHeight, 0]);
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
@@ -15,52 +25,54 @@ export default function renderFlightDistanceChart() {
   const svg = d3
     .select("#q1Container")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr('viewBox',
+      "0 0 " + width + " " + height
+  )
 
   //adding groups for axes and zoomable area
   const axesGroup = svg
     .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+    .attr("transform", `translate(70, 10)`);
 
   const focus = svg
     .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .attr("transform", `translate(70, 10)`)
     .attr("clip-path", "url(#clip)");
 
   //add a clipping path
   focus
-    .append("defs")
-    .append("clipPath")
-    .attr("id", "clip")
-    .append("rect")
-    .attr("width", width)
-    .attr("height", height);
+  .append("defs")
+  .append("clipPath")
+  .attr("id", "clip")
+  .append("rect")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("transform", `translate(0, -10)`);
 
   //add X-axis title
   axesGroup
-    .append("text")
-    .attr("id", "x-axis-title")
-    .attr("x", width / 2)
-    .attr("y", height + margin.bottom - 10)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "16px")
-    .attr("fill", "black")
-    .text("Flight ID");
+  .append("text")
+  .attr("id", "x-axis-title")
+  .attr("x", innerWidth / 2)
+  .attr("y", innerHeight + 40)
+  .attr("text-anchor", "middle")
+  .attr("font-size", "16px")
+  .attr("fill", "black")
+  .text("Flight ID");
 
   //add Y-axis title
   axesGroup
-    .append("text")
-    .attr("id", "y-axis-title")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -height / 2)
-    .attr("y", -margin.left + 20)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "16px")
-    .attr("fill", "black")
-    .text("Flight Distance");
+  .append("text")
+  .attr("id", "y-axis-title")
+  .attr("transform", "rotate(-90)")
+  .attr("x", -height / 2)
+  .attr("y", -58)
+  .attr("text-anchor", "middle")
+  .attr("font-size", "16px")
+  .attr("fill", "black")
+  .text("Flight Distance")
 
-  const xAxisGroup = axesGroup.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
+  const xAxisGroup = axesGroup.append("g").attr("class", "x axis").attr("transform", `translate(0,${innerHeight})`);
   const yAxisGroup = axesGroup.append("g").attr("class", "y axis");
 
   const line = d3
@@ -72,9 +84,9 @@ export default function renderFlightDistanceChart() {
   const tooltip = d3
     .select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .attr("class", "toolTipBackground")
     .style("position", "absolute")
-    .style("background-color", "white")
+    .style("background-color", "#36454F")
     .style("border", "1px solid black")
     .style("border-radius", "5px")
     .style("padding", "10px")
@@ -100,7 +112,8 @@ export default function renderFlightDistanceChart() {
       .datum(satisfiedData)
       .attr("class", "line satisfied")
       .attr("d", line)
-      .attr("stroke", "green")
+      .attr("stroke", color[0])
+      .attr('stroke-width', 2)
       .attr("fill", "none");
 
     //the red path (not satisfied)
@@ -109,7 +122,8 @@ export default function renderFlightDistanceChart() {
       .datum(notSatisfiedData)
       .attr("class", "line not-satisfied")
       .attr("d", line)
-      .attr("stroke", "red")
+      .attr("stroke", color[1])
+      .attr('stroke-width', 2)
       .attr("fill", "none");
 
     const satisfiedDots = focus
@@ -129,6 +143,7 @@ export default function renderFlightDistanceChart() {
             <strong>Distance:</strong> ${d.distance}<br>
             <strong>Status:</strong> Satisfied`
           )
+          .style('color', 'white')
           .style("left", `${event.pageX + 10}px`)
           .style("top", `${event.pageY - 10}px`);
         d3.select(this).attr("r", 8).attr("fill", "blue");
@@ -149,9 +164,10 @@ export default function renderFlightDistanceChart() {
       .attr("cx", (d) => xScale(d.id))
       .attr("cy", (d) => yScale(d.distance))
       .attr("r", 5)
-      .attr("fill", "red")
+      .attr("fill", color[1])
       .on("mouseover", function (event, d) {
         tooltip
+          .style('color', 'white')
           .style("opacity", 1)
           .html(
             `<strong>Flight ID:</strong> ${d.id}<br>
@@ -167,7 +183,7 @@ export default function renderFlightDistanceChart() {
       })
       .on("mouseout", function () {
         tooltip.style("opacity", 0);
-        d3.select(this).attr("r", 5).attr("fill", "red");
+        d3.select(this).attr("r", 5).attr("fill", color[1]);
       });
 
     xAxisGroup.call(xAxis);
