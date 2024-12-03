@@ -1,8 +1,9 @@
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
 
 export default async function returnTotalFlightDist () {
     // Returning data from CSV
-    const data = await d3.csv('/data/customer_satisfaction.csv');
+    const data = await d3.csv('../data/customer_satisfaction.csv');
     // Initializing array to store records with flight distances
     var flightDistArr = []
     // Initialized variable to store total flight distance
@@ -16,5 +17,26 @@ export default async function returnTotalFlightDist () {
     // Once finished, return Promise that resovles to the sum of all flown distance records
     return new Promise ((resolve) => {resolve(distance)})
 
-}
+//fetching customer_satisfaction.csv
+//making sure our directory path is correct
+const csvPath = "../data/customer_satisfaction.csv";
+fetch(csvPath)
+  .then((response) => {
+    if (!response.ok)
+      throw new Error(`Failed to fetch FOR q8.js: ${response.statusText}`);
+    return response.text();
+  })
+  .then((data) => console.log("q8.js csv data successfully recieved: " + data))
+  .catch((error) => console.error(error));
 
+
+  var distFilter = data.filter((record) => {
+    flightDistArr.push(parseInt(record["Flight Distance"]));
+  });
+
+  for (let i = 0; i < flightDistArr.length; i++) {
+    distance += flightDistArr[i];
+  }
+
+  return distance;
+}

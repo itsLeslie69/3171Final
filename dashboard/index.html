@@ -23,8 +23,14 @@
                         <h3 id="q9Figure"></h3>
                     </div>
                 </div>
+
                
                 <div id="q5Container" class="lg:col-span-3 lg:max-h-[28rem] sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
+
+                <div id="q1Container" class="lg:col-span-4 sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+               
+                <div id="q2Container" class="lg:col-span-4 sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 m-2"></div>
+
                 <!--2nd Row-->
                 
                 <div id="q4Container" class="lg:col-span-3 lg:max-h-[28rem] sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
@@ -52,6 +58,20 @@
 </body>
 </html>
 <script type="module">
+
+  //fetching customer_satisfaction.csv
+      //making sure our directory path is correct
+      const csvPath = "../data/customer_satisfaction.csv";
+      fetch(csvPath)
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(`Failed to fetch FOR index.html: ${response.statusText}`);
+          return response.text();
+        })
+        .then((data) => console.log("index.html csv data successfully recieved: " + data))
+        .catch((error) => console.error(error));
+
+
    // Imports
     // Helper Functions
     import appendSingleFigure from "./utilities/appendSingleFigure.js"

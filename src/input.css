@@ -92,8 +92,10 @@ path:hover {
     font-size: 1rem;
 }
 
+
 /* Graph axis text */
 
 g.tick text {
     font-size: 0.8rem;
 }
+

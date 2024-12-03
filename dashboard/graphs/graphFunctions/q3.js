@@ -41,8 +41,10 @@ export default async function getGraph3 () {
                             .attr('class', 'gGroup')
                             .attr('id', 'gGroup')
                             .attr("transform", "translate(50, 10)")
-    
-    d3.csv('/data/customer_satisfaction.csv').then((data) => {
+
+    d3.csv('../data/customer_satisfaction.csv').then((data) => {
+
+
         // x-axis scale
         var xScale = d3.scaleLinear()
                         .domain([1, 5])  
