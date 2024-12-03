@@ -1,139 +1,197 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-export default function getGraph1 () {
-    //load the data from the external file
-d3.csv("../data/customer_satisfaction.csv").then((data) => {
-// Extract the Flight Distance column
-const flightDistances = data.map((d) => +d["Flight Distance"]);
-//render chart
-renderChart(flightDistances);
-//check if we got the data in the console
-console.log(flightDistances);
-});
+export default function getGraph1() {
+  const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+  const width = 1000 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
-function renderChart(data) {
+  const xScale = d3.scaleLinear().range([0, width]);
+  const yScale = d3.scaleLinear().range([height, 0]);
 
-const svgwidth = 500;
-const svgheight = 500;
-const padding = 50;
+  const xAxis = d3.axisBottom(xScale);
+  const yAxis = d3.axisLeft(yScale);
 
-const svg = d3
-    .select("#line_chart")
-    .append("#q1Container")
-    .attr("width", svgwidth)
-    .attr("height", svgheight);
+  // Select container and create SVG
+  const svg = d3
+    .select("#chart-container")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
 
-svg
+  const axesGroup = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const chartArea = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .attr("clip-path", "url(#clip)");
+
+  // Add clipping path
+  chartArea
+    .append("defs")
+    .append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+  // Axes labels
+  axesGroup
     .append("text")
-    .attr("x", "20")
-    .attr("y", padding / 2)
-    .attr("text-anchor", "start")
-    .style("font-size", "20px")
+    .attr("x", width / 2)
+    .attr("y", height + margin.bottom - 10)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .text("Flight ID");
+
+  axesGroup
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 20)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
     .text("Flight Distance");
 
-const inner_width = svgwidth - 2 * padding;
-const inner_height = svgheight - 2 * padding;
+  // Tooltip
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("background", "#fff")
+    .style("border", "1px solid #ccc")
+    .style("padding", "5px")
+    .style("border-radius", "5px")
+    .style("opacity", 0);
 
-const g = svg
-    .append("g")
-    .attr("transform", `translate(${padding},${padding})`);
+  // Load data
+  d3.csv("../data/customer_satisfaction.csv").then((data) => {
+    const parsedData = data.map((d, i) => ({
+      id: i,
+      distance: +d["Flight Distance"],
+      satisfied: d["satisfaction"] === "satisfied",
+    }));
 
-//create scales for our data (ranges and domains allowing us to visualize data)
-const xscale = d3
-    .scaleLinear()
-    //this domain on the x axis represents the amount of data points we are looking at
-    .domain([0, data.length - 1])
-    //the range for the size of our graph
-    .range([0, inner_width]);
+    const satisfiedData = parsedData.filter((d) => d.satisfied);
+    const notSatisfiedData = parsedData.filter((d) => !d.satisfied);
 
-const yscale = d3
-    .scaleLinear()
-    //our domain includes 0 to the maximum amount of distance for our graph on the y axis
-    .domain([0, d3.max(data)])
-    .range([inner_height, 0]);
+    // Set domains
+    xScale.domain([0, parsedData.length + 1]);
+    yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
 
-//we are creating the axis
-//the data.length on line 78 defines how many ticks there will be
-//without this it will not show numbers 0 to 98 on our chart!
-const xaxis = d3.axisBottom(xscale).ticks(data.length);
-//this creates a y axis on the left side of the chart
-//ticks(5) tells us there are 8 tick marks on the x axis
-const yaxis = d3.axisLeft(yscale).ticks(8);
+    // Satisfied line
+    chartArea
+      .append("path")
+      .datum(satisfiedData)
+      .attr("class", "line satisfied")
+      .attr("d", d3.line().x((d) => xScale(d.id)).y((d) => yScale(d.distance)))
+      .attr("stroke", "green")
+      .attr("fill", "none");
 
-//adding the axis to the graph with .append()
-//0 represents the x axis and inner height makes sure the x axis starts at the bottom of the
-//chart for proper rendering
-g.append("g")
-    .attr("transform", `translate(0,${inner_height})`)
-    //call renders the x axis when we are done
-    .call(xaxis);
+    // Not satisfied line
+    chartArea
+      .append("path")
+      .datum(notSatisfiedData)
+      .attr("class", "line not-satisfied")
+      .attr("d", d3.line().x((d) => xScale(d.id)).y((d) => yScale(d.distance)))
+      .attr("stroke", "red")
+      .attr("fill", "none");
 
-//we now add the y axis to our graph
-g.append("g").call(yaxis);
+    // Points
+    chartArea
+      .selectAll(".dot-satisfied")
+      .data(satisfiedData)
+      .join("circle")
+      .attr("class", "dot-satisfied")
+      .attr("cx", (d) => xScale(d.id))
+      .attr("cy", (d) => yScale(d.distance))
+      .attr("r", 5)
+      .attr("fill", "green")
+      .on("mouseover", (event, d) => {
+        tooltip
+          .style("opacity", 1)
+          .html(`ID: ${d.id}<br>Distance: ${d.distance}<br>Status: Satisfied`)
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 10}px`);
+      })
+      .on("mousemove", (event) => {
+        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 10}px`);
+      })
+      .on("mouseout", () => {
+        tooltip.style("opacity", 0);
+      });
 
-//creating a line for our linear graph
-const line = d3
-    .line()
-    //iterate through the values on the x scale with an arrow function
-    .x((d, i) => xscale(i))
-    .y((d) => yscale(d));
+    chartArea
+      .selectAll(".dot-not-satisfied")
+      .data(notSatisfiedData)
+      .join("circle")
+      .attr("class", "dot-not-satisfied")
+      .attr("cx", (d) => xScale(d.id))
+      .attr("cy", (d) => yScale(d.distance))
+      .attr("r", 5)
+      .attr("fill", "red")
+      .on("mouseover", (event, d) => {
+        tooltip
+          .style("opacity", 1)
+          .html(`ID: ${d.id}<br>Distance: ${d.distance}<br>Status: Not Satisfied`)
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 10}px`);
+      })
+      .on("mousemove", (event) => {
+        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 10}px`);
+      })
+      .on("mouseout", () => {
+        tooltip.style("opacity", 0);
+      });
 
-//add our newly created line
-g.append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "blue")
-    .attr("stroke-width", 2)
-    .attr("d", line);
+    // Render axes
+    axesGroup.select(".x.axis").call(xAxis);
+    axesGroup.select(".y.axis").call(yAxis);
 
-//add circles for each data point
-g.selectAll("circle")
-    .data(data)
-    .join("circle")
-    .style("opacity", "60%")
-    .attr("cx", (d, i) => xscale(i))
-    .attr("cy", (d) => yscale(d))
-    //make the radius of each point (circle) 8
-    .attr("r", 4)
-    .attr("fill", "red")
-    //when the user hovers over the color changes
-    .on("mouseover", function (event, d) {
-    const tooltip = d3.select("#tooltip");
-    tooltip
-        .style("display", "block")
-        .style("left", `${event.pageX + 10}px`)
-        .style("top", `${event.pageY - 10}px`)
-        .text(`Flight Distance: ${d}`);
-    d3.select(this).attr("fill", "blue").attr("r", 13); // Change color to blue and enlarge radius
-    })
-    .on("mousemove", function (event) {
-    const tooltip = d3.select("#tooltip");
-    tooltip
-        .style("left", `${event.pageX + 10}px`)
-        .style("top", `${event.pageY - 10}px`);
-    })
-    .on("mouseout", function () {
-    d3.select("#tooltip").style("display", "none");
-    d3.select(this).attr("fill", "red").attr("r", 4); // Revert color and radius when mouse leaves
-    });
+    // Add zoom
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 10])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", zoomed);
 
-//append the tooltips
-g.selectAll(".label")
-    .data(data)
-    //.join creates text elements -> updates or even removes them based on if the data has changed
-    //great for making sure that we don't have extra text elements that are empty or we do not need
-    .join("text")
-    .attr("class", "label")
-    //by adding +4 to the label we are positioning the label to be slightly to the right of the red circles
-    .attr("x", (d, i) => xscale(i) + 4)
-    //the label will be slightly above the red circle
-    .attr("y", (d) => yscale(d) - 10)
-    //d => d is an arrow function that will return the values of our array and will create a text element
-    //for each data point
-    .text((d) => d)
-    //we will make the font size 11px
-    .style("font-size", "11px")
-    .style("fill", "black");
-}
+    chartArea
+      .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .call(zoom);
 
+    function zoomed({ transform }) {
+      const newXScale = transform.rescaleX(xScale);
+
+      axesGroup.select(".x.axis").call(xAxis.scale(newXScale));
+
+      chartArea.selectAll(".line.satisfied").attr(
+        "d",
+        d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+      );
+
+      chartArea.selectAll(".line.not-satisfied").attr(
+        "d",
+        d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+      );
+
+      chartArea
+        .selectAll(".dot-satisfied")
+        .attr("cx", (d) => newXScale(d.id))
+        .attr("cy", (d) => yScale(d.distance));
+
+      chartArea
+        .selectAll(".dot-not-satisfied")
+        .attr("cx", (d) => newXScale(d.id))
+        .attr("cy", (d) => yScale(d.distance));
+    }
+  });
 }
