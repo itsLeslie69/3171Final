@@ -1,7 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"
 
 export default async function returnBooking () {
-    const data = await d3.csv('/data/customer_satisfaction.csv');
+    const data = await d3.csv('../data/customer_satisfaction.csv');
 
     const oneStar = data.filter((record) => record["Ease of Online booking"] == 1).length;
     const twoStar = data.filter((record) => record["Ease of Online booking"] == 2).length;
