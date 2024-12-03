@@ -2,20 +2,12 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export default function renderFlightDistanceChart() {
   //setting dimensions and margins
-/*   const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+  const margin = { top: 20, right: 30, bottom: 50, left: 100 };
   const width = 1000 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom; */
+  const height = 500 - margin.top - margin.bottom;
 
-  var width = 450
-  var height = 450
-
-  var padding = 100
-
-  var innerWidth = width - padding
-  var innerHeight = height - padding
-
-  const xScale = d3.scaleLinear().range([0, innerWidth]);
-  const yScale = d3.scaleLinear().range([innerHeight, 0]);
+  const xScale = d3.scaleLinear().range([0, width]);
+  const yScale = d3.scaleLinear().range([height, 0]);
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
@@ -23,49 +15,53 @@ export default function renderFlightDistanceChart() {
   const svg = d3
     .select("#q1Container")
     .append("svg")
-    .attr('viewBox',
-      "0 0 " + width + " " + height
-  )
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
 
-  const chartGroup = svg
+  //adding groups for axes and zoomable area
+  const axesGroup = svg
     .append("g")
-    .attr("transform", `translate(70, 10)`);
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const focus = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`)
+    .attr("clip-path", "url(#clip)");
 
   //add a clipping path
-  chartGroup
+  focus
     .append("defs")
     .append("clipPath")
     .attr("id", "clip")
     .append("rect")
     .attr("width", width)
-    .attr("height", height)
-    .attr("transform", `translate(0, -10)`);
+    .attr("height", height);
 
   //add X-axis title
-  chartGroup
+  axesGroup
     .append("text")
     .attr("id", "x-axis-title")
-    .attr("x", innerWidth / 2)
-    .attr("y", innerHeight + 40)
+    .attr("x", width / 2)
+    .attr("y", height + margin.bottom - 10)
     .attr("text-anchor", "middle")
     .attr("font-size", "16px")
     .attr("fill", "black")
     .text("Flight ID");
 
   //add Y-axis title
-  chartGroup
+  axesGroup
     .append("text")
     .attr("id", "y-axis-title")
     .attr("transform", "rotate(-90)")
     .attr("x", -height / 2)
-    .attr("y", -58)
+    .attr("y", -margin.left + 20)
     .attr("text-anchor", "middle")
     .attr("font-size", "16px")
     .attr("fill", "black")
     .text("Flight Distance");
 
-  const xAxisGroup = chartGroup.append("g").attr("class", "x axis").attr("transform", `translate(0,${innerHeight})`);
-  const yAxisGroup = chartGroup.append("g").attr("class", "y axis");
+  const xAxisGroup = axesGroup.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
+  const yAxisGroup = axesGroup.append("g").attr("class", "y axis");
 
   const line = d3
     .line()
@@ -98,11 +94,8 @@ export default function renderFlightDistanceChart() {
     xScale.domain([0, parsedData.length + 1]);
     yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
 
-
-    //the green path (color will be changed to comply with our theme)
-    const satisfiedPath = chartGroup
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    //the green path (satisfied)
+    const satisfiedPath = focus
       .append("path")
       .datum(satisfiedData)
       .attr("class", "line satisfied")
@@ -110,10 +103,8 @@ export default function renderFlightDistanceChart() {
       .attr("stroke", "green")
       .attr("fill", "none");
 
-    //the red path
-    const notSatisfiedPath = chartGroup
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    //the red path (not satisfied)
+    const notSatisfiedPath = focus
       .append("path")
       .datum(notSatisfiedData)
       .attr("class", "line not-satisfied")
@@ -121,9 +112,7 @@ export default function renderFlightDistanceChart() {
       .attr("stroke", "red")
       .attr("fill", "none");
 
-    const satisfiedDots = chartGroup
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    const satisfiedDots = focus
       .selectAll(".dot-satisfied")
       .data(satisfiedData)
       .join("circle")
@@ -132,7 +121,6 @@ export default function renderFlightDistanceChart() {
       .attr("cy", (d) => yScale(d.distance))
       .attr("r", 5)
       .attr("fill", "green")
-      //when the user hovers over the point they can see the data 
       .on("mouseover", function (event, d) {
         tooltip
           .style("opacity", 1)
@@ -153,9 +141,7 @@ export default function renderFlightDistanceChart() {
         d3.select(this).attr("r", 5).attr("fill", "green");
       });
 
-    const notSatisfiedDots = chartGroup
-      .append("g")
-      .attr("clip-path", "url(#clip)")
+    const notSatisfiedDots = focus
       .selectAll(".dot-not-satisfied")
       .data(notSatisfiedData)
       .join("circle")
@@ -196,13 +182,14 @@ export default function renderFlightDistanceChart() {
       ])
       .on("zoom", zoomed);
 
-    svg
+    focus
       .append("rect")
-      .attr("width", innerWidth)
-      .attr("height", innerHeight)
+      .attr("class", "zoom")
+      .attr("width", width)
+      .attr("height", height)
       .style("fill", "none")
       .style("pointer-events", "all")
-/*       .attr("transform", `translate(${margin.left},${margin.top})`) */
+      .lower()
       .call(zoom);
 
     function zoomed({ transform }) {
@@ -230,3 +217,4 @@ export default function renderFlightDistanceChart() {
     }
   });
 }
+
