@@ -92,7 +92,7 @@ export default function getGraph6 () {
             .join('rect')
             .on('mouseover', function (event, d) {
 
-                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(2), 0, -90, "Cost")
+                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(0), 50, -50, "Cost")
             }).on('mouseout', function () {
                 d3.selectAll('.toolTip').remove()
             })
