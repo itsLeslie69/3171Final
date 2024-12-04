@@ -9,11 +9,4 @@ export default async function returnLoyalCustomers () {
     var loyalCustNum = data.filter((record) => record["Customer Type"] == "Loyal Customer").length
     // Return a Promise to asynchronously handle data without breaking the DOM
     return new Promise ((resolve) => {resolve(loyalCustNum)})
-
-
-  var loyalCustNum = data.filter(
-    (record) => record["Customer Type"] == "Loyal Customer"
-  ).length;
-
-  return loyalCustNum;
 }

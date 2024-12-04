@@ -125,69 +125,35 @@ export default function getGraph5() {
       .attr("x", innerWidth / 2)
       .attr("y", 440)
 
-      .attr("text-anchor", "middle")
-      .text("Class Flown");
-
-    graphGroup
-      .append("text")
-      .attr("class", "axis-label")
-      .attr("text-anchor", "middle")
-
-      .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
-      .text("Passenger Satisfaction");
-
-    //Title
-    graphGroup
-      .append("text")
-      .attr("class", "axis-label")
-      .attr("x", innerWidth / 2)
-      .attr("y", -30)
-      .attr("font-size", "16px")
-      .attr("font-weight", "bold")
-      .attr("text-anchor", "middle")
-      .text("Passenger Satisfaction by Class");
-
-    graphGroup
-      .append("g")
-      .selectAll("g")
-      .data(graphData)
-      .join("g")
-      //.attr('transform', (d, i) => `translate(${xScale(d[0])}, 0)`)
-      .selectAll("rect")
-      .data((d) => {
-        // Flatten ticket prices into individual data items for each rect element
-        return [
-          { class: d[0], satisfaction: d[1] },
-          { class: d[0], satisfaction: d[2] },
-          { class: d[0], satisfaction: d[3] },
-        ];
-      })
-      .join("rect")
-      .attr("fill", (d, i) => {
-        return color[i - 1];
-      }) // Colour
-      .attr("x", (d) => xScale(d.class)) // Position each ticket price with reference to the group
-      .attr("y", (d) => yScale(parseFloat(d.satisfaction))) // Set y position based on the price
-      .attr("width", xScale.bandwidth()) // Set width
-      .attr("height", (d) => {
-        return innerHeight - yScale(parseFloat(d.satisfaction));
-      }) // Set height
-      .on("mouseover", function (event, d) {
-        appendToolTip(
-          graphGroup,
-          this.x.baseVal.value,
-          this.y.baseVal.value,
-          d,
-          0,
-          parseFloat(d.satisfaction).toFixed(2),
-          -10,
-          -60,
-          "Satisfaction"
-        );
-        console.log(d);
-      })
-      .on("mouseout", function () {
-        d3.selectAll(".toolTip").remove();
-      });
-  });
+        graphGroup.append('g')
+        .selectAll('g')
+        .data(graphData)
+        .join('g')
+        //.attr('transform', (d, i) => `translate(${xScale(d[0])}, 0)`)  
+        .selectAll('rect')
+        .data(d => {
+            // Flatten ticket prices into individual data items for each rect element
+            return [
+                { class: d[0], satisfaction: d[1] },
+                { class: d[0], satisfaction: d[2]  },
+                { class: d[0], satisfaction: d[3]  },
+            ];
+        })
+        .join('rect')
+        .attr('fill', (d, i) => {
+            return color[i - 1]
+        }) // Colour
+        .attr('x', d => xScale(d.class))  // Position each ticket price with reference to the group
+        .attr('y', d => yScale(parseFloat(d.satisfaction)))          // Set y position based on the price
+        .attr('width', xScale.bandwidth())// Set width
+        .attr('height', d => {return innerHeight - yScale(parseFloat(d.satisfaction))}) // Set height
+        .on('mouseover', function (event, d) {
+            appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, parseFloat(d.satisfaction).toFixed(2), -10, -40, 'Satisfaction')
+                console.log(d)
+            })
+            .on('mouseout', function () {
+                d3.selectAll('.toolTip').remove();
+            })   
+        }
+    )
 }
