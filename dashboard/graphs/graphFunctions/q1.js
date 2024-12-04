@@ -18,6 +18,16 @@ export default function renderFlightDistanceChart() {
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
 
+      //add title
+  svg
+  .append("text")
+  .attr("x", (width + margin.left + margin.right) / 2)
+  .attr("y", margin.top )
+  .attr("text-anchor", "middle")
+  .attr("font-size", "20px")
+  .attr("font-weight", "bold")
+  .text("Flight Distances");
+
   //adding groups for axes and zoomable area
   const axesGroup = svg
     .append("g")
@@ -42,7 +52,7 @@ export default function renderFlightDistanceChart() {
     .append("text")
     .attr("id", "x-axis-title")
     .attr("x", width / 2)
-    .attr("y", height + margin.bottom - 10)
+    .attr("y", height + margin.bottom - 5)
     .attr("text-anchor", "middle")
     .attr("font-size", "16px")
     .attr("fill", "black")
@@ -119,7 +129,7 @@ export default function renderFlightDistanceChart() {
       .attr("class", "dot-satisfied")
       .attr("cx", (d) => xScale(d.id))
       .attr("cy", (d) => yScale(d.distance))
-      .attr("r", 5)
+      .attr("r", 2)
       .attr("fill", "green")
       .on("mouseover", function (event, d) {
         tooltip
@@ -138,7 +148,7 @@ export default function renderFlightDistanceChart() {
       })
       .on("mouseout", function () {
         tooltip.style("opacity", 0);
-        d3.select(this).attr("r", 5).attr("fill", "green");
+        d3.select(this).attr("r", 2).attr("fill", "green");
       });
 
     const notSatisfiedDots = focus
@@ -148,7 +158,7 @@ export default function renderFlightDistanceChart() {
       .attr("class", "dot-not-satisfied")
       .attr("cx", (d) => xScale(d.id))
       .attr("cy", (d) => yScale(d.distance))
-      .attr("r", 5)
+      .attr("r", 2)
       .attr("fill", "red")
       .on("mouseover", function (event, d) {
         tooltip
@@ -167,7 +177,7 @@ export default function renderFlightDistanceChart() {
       })
       .on("mouseout", function () {
         tooltip.style("opacity", 0);
-        d3.select(this).attr("r", 5).attr("fill", "red");
+        d3.select(this).attr("r", 2).attr("fill", "red");
       });
 
     xAxisGroup.call(xAxis);
