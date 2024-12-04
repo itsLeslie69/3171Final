@@ -1,96 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
     <title>Dashboard</title>
-</head>
-<body class="min-h-screen bg-gray-100 overflow-auto">
-    <div class="flex flex-wrap px-4 justify-center py-4 gap-5 max-w-8xl mx-auto">
-        <!-- Outline (spanning one column) -->
-        <div class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/3">
-            <h2 class="text-lg font-semibold mb-4">Outline</h2>
-            <div id="q7Container" class="bg-gray-400 rounded-lg text-center p-8 mb-4">
-                <p id="q7Figure" class="text-xl font-bold">0</p>
-            </div>
-            <div id="q8Container" class="bg-gray-400 rounded-lg text-center p-8 mb-4">
-                <p id="q8Figure" class="text-xl font-bold">0</p>
-            </div>
-            <div id="q9Container" class="bg-gray-400 rounded-lg text-center p-8">
-                <p id="q9Figure" class="text-xl font-bold">0</p>
-            </div>
+  </head>
+  <body class="min-h-screen bg-gray-100 overflow-auto">
+    <div
+      class="flex flex-wrap px-4 justify-center py-4 gap-5 max-w-8xl mx-auto"
+    >
+      <!-- Outline (spanning one column) -->
+      <div class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/3">
+        <h2 class="text-2xl font-bold mb-4">Outline</h2>
+
+        <div
+          id="q7Container"
+          class="bg-gray-400 rounded-lg text-center p-8 mb-4"
+        >
+          <p id="q7Figure" class="text-xl font-bold">0</p>
         </div>
-
-        <!-- q1Container -->
-        <div id="q1Container" class="bg-gray-300 rounded-md shadow-md  h-[4000px] p-10"></div>
-
-
-
-        
-        <!-- q2Container -->
-        <div id="q2Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
-
-        <!-- q4Container -->
-        <div id="q4Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
-
-
-        
-        <!-- q5Container -->
-        <div id="q5Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
-
-        <!-- q6Container -->
-        <div id="q6Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
-
-        <!-- q3Container -->
-        <div id="q3Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4">
-            <select name="graphs" id="dropDown" class="w-full p-2 border rounded-lg">
-                <option value="select">Select Graph</option>
-                <option value="checkIn">Check-in</option>
-                <option value="booking">Ease of Booking</option>
-                <option value="gateLocation">Gate Location</option>
-                <option value="onBoardService">On-Board Service</option>
-                <option value="baggageHandling">Baggage Handling</option>
-            </select>
+        <div
+          id="q8Container"
+          class="bg-gray-400 rounded-lg text-center p-8 mb-4"
+        >
+          <p id="q8Figure" class="text-xl font-bold">0</p>
         </div>
+        <div id="q9Container" class="bg-gray-400 rounded-lg text-center p-8">
+          <p id="q9Figure" class="text-xl font-bold">0</p>
+        </div>
+      </div>
+
+      <!-- q1Container -->
+      <div
+        id="q1Container"
+        class="bg-gray-300 rounded-md shadow-md h-[4000px] p-10"
+      ></div>
+
+      <!-- q2Container -->
+      <div
+        id="q2Container"
+        class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"
+      ></div>
+
+      <!-- q4Container -->
+      <div
+        id="q4Container"
+        class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"
+      ></div>
+
+      <!-- q5Container -->
+      <div
+        id="q5Container"
+        class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"
+      ></div>
+
+      <!-- q6Container -->
+      <div
+        id="q6Container"
+        class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"
+      ></div>
+
+      <!-- q3Container -->
+      <div
+        id="q3Container"
+        class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"
+      >
+        <select
+          name="graphs"
+          id="dropDown"
+          class="w-full p-2 border rounded-lg"
+        >
+          <option value="select">Select Graph</option>
+          <option value="checkIn">Check-in</option>
+          <option value="booking">Ease of Booking</option>
+          <option value="gateLocation">Gate Location</option>
+          <option value="onBoardService">On-Board Service</option>
+          <option value="baggageHandling">Baggage Handling</option>
+        </select>
+      </div>
     </div>
-</body>
+  </body>
 </html>
 <script type="module">
   const csvPath = "../data/customer_satisfaction.csv";
   fetch(csvPath)
     .then((response) => {
       if (!response.ok)
-        throw new Error(`Failed to fetch FOR index.html: ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch FOR index.html: ${response.statusText}`
+        );
       return response.text();
     })
-    .then((data) => console.log("index.html csv data successfully received: " + data))
+    .then((data) =>
+      console.log("index.html csv data successfully received: " + data)
+    )
     .catch((error) => console.error(error));
 
-  import appendSingleFigure from "./utilities/appendSingleFigure.js"
-  import returnLoyalCustomers from "./graphs/singleFigures/q7.js"
-  import returnTotalFlightDist from "./graphs/singleFigures/q8.js"
-  import returnNoDelayCust from "./graphs/singleFigures/q9.js"
+  import appendSingleFigure from "./utilities/appendSingleFigure.js";
+  import returnLoyalCustomers from "./graphs/singleFigures/q7.js";
+  import returnTotalFlightDist from "./graphs/singleFigures/q8.js";
+  import returnNoDelayCust from "./graphs/singleFigures/q9.js";
 
-  import getGraph1 from "./graphs/graphFunctions/q1.js"
-  import getGraph2 from "./graphs/graphFunctions/q2.js"
-  import getGraph3 from "./graphs/graphFunctions/q3.js"
-  import getGraph4 from "./graphs/graphFunctions/q4.js"
-  import getGraph5 from "./graphs/graphFunctions/q5.js"
-  import getGraph6 from "./graphs/graphFunctions/q6.js"
+  import getGraph1 from "./graphs/graphFunctions/q1.js";
+  import getGraph2 from "./graphs/graphFunctions/q2.js";
+  import getGraph3 from "./graphs/graphFunctions/q3.js";
+  import getGraph4 from "./graphs/graphFunctions/q4.js";
+  import getGraph5 from "./graphs/graphFunctions/q5.js";
+  import getGraph6 from "./graphs/graphFunctions/q6.js";
 
-  var loyalNum = await returnLoyalCustomers()
-  var totalDistFlown = await returnTotalFlightDist()
-  var noDelayNum = await returnNoDelayCust()
+  var loyalNum = await returnLoyalCustomers();
+  var totalDistFlown = await returnTotalFlightDist();
+  var noDelayNum = await returnNoDelayCust();
 
-  appendSingleFigure('q7Container', loyalNum)
-  appendSingleFigure('q8Container', totalDistFlown)
-  appendSingleFigure('q9Container', noDelayNum)
+  appendSingleFigure("q7Container", loyalNum);
+  appendSingleFigure("q8Container", totalDistFlown);
+  appendSingleFigure("q9Container", noDelayNum);
 
-  getGraph1()
-  getGraph2()
-  getGraph3()
-  getGraph4()
-  getGraph5()
-  getGraph6()
+  getGraph1();
+  getGraph2();
+  getGraph3();
+  getGraph4();
+  getGraph5();
+  getGraph6();
 </script>

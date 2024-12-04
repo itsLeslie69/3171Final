@@ -18,15 +18,15 @@ export default function renderFlightDistanceChart() {
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
 
-      //add title
+  //add title
   svg
-  .append("text")
-  .attr("x", (width + margin.left + margin.right) / 2)
-  .attr("y", margin.top )
-  .attr("text-anchor", "middle")
-  .attr("font-size", "20px")
-  .attr("font-weight", "bold")
-  .text("Flight Distances");
+    .append("text")
+    .attr("x", (width + margin.left + margin.right) / 2)
+    .attr("y", margin.top)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "24px")
+    .attr("font-weight", "bold")
+    .text("Flight Distances");
 
   //adding groups for axes and zoomable area
   const axesGroup = svg
@@ -70,7 +70,10 @@ export default function renderFlightDistanceChart() {
     .attr("fill", "black")
     .text("Flight Distance");
 
-  const xAxisGroup = axesGroup.append("g").attr("class", "x axis").attr("transform", `translate(0,${height})`);
+  const xAxisGroup = axesGroup
+    .append("g")
+    .attr("class", "x axis")
+    .attr("transform", `translate(0,${height})`);
   const yAxisGroup = axesGroup.append("g").attr("class", "y axis");
 
   const line = d3
@@ -102,7 +105,7 @@ export default function renderFlightDistanceChart() {
     const notSatisfiedData = parsedData.filter((d) => !d.satisfied);
 
     xScale.domain([0, parsedData.length + 1]);
-    yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
+    yScale.domain([0, d3.max(parsedData, (d) => d.distance+100)]);
 
     //the green path (satisfied)
     const satisfiedPath = focus
@@ -144,7 +147,9 @@ export default function renderFlightDistanceChart() {
         d3.select(this).attr("r", 8).attr("fill", "blue");
       })
       .on("mousemove", function (event) {
-        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 10}px`);
+        tooltip
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 10}px`);
       })
       .on("mouseout", function () {
         tooltip.style("opacity", 0);
@@ -173,7 +178,9 @@ export default function renderFlightDistanceChart() {
         d3.select(this).attr("r", 8).attr("fill", "blue");
       })
       .on("mousemove", function (event) {
-        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 10}px`);
+        tooltip
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 10}px`);
       })
       .on("mouseout", function () {
         tooltip.style("opacity", 0);
@@ -209,12 +216,18 @@ export default function renderFlightDistanceChart() {
 
       satisfiedPath.attr(
         "d",
-        d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+        d3
+          .line()
+          .x((d) => newXScale(d.id))
+          .y((d) => yScale(d.distance))
       );
 
       notSatisfiedPath.attr(
         "d",
-        d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+        d3
+          .line()
+          .x((d) => newXScale(d.id))
+          .y((d) => yScale(d.distance))
       );
 
       satisfiedDots
