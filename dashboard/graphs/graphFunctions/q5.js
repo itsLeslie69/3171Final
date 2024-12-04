@@ -161,7 +161,7 @@ export default function getGraph5 () {
         .attr('width', xScale.bandwidth())// Set width
         .attr('height', d => {return innerHeight - yScale(parseFloat(d.satisfaction))}) // Set height
         .on('mouseover', function (event, d) {
-            appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, parseFloat(d.satisfaction).toFixed(2), -10, -60, 'Satisfaction')
+            appendToolTip(graphGroup, this.x.baseVal.value, this.y.baseVal.value, d, 0, parseFloat(d.satisfaction).toFixed(2), -10, -40, 'Satisfaction')
                 console.log(d)
             })
             .on('mouseout', function () {
