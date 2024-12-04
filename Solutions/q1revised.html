@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Flight Distance</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      svg {
+        font-size: 10px;
+        background-color: #f9f9f9;
+      }
+
+      .line {
+        fill: none;
+        stroke-width: 1.5;
+      }
+
+      .display {
+        display: flex;
+        justify-content: left;
+        margin-bottom: 20px;
+        margin-left:1%;
+      }
+
+      .box-satisfied{
+        fill:"green";
+        background-color: green;
+        width:50px;
+        height:50px;
+        padding:5%;
+        margin:1%;
+      }
+      .box-unsatisfied{
+        fill:"red";
+        background-color:red;
+        width:50px;
+        height:50px;
+        padding:5%;
+        margin:1%;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <h1>Flight Distance</h1>
+   
+    <div id="chart-container"></div>
+    <div class="display">
+      <div class="box-satisfied">satisfied</div>
+      <div class="box-unsatisfied">unsatisfied</div>
+    </div>
+
+
+    <script>
+      //set dimensions and margins to create distance between other graphs on our index.html
+      const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+      const width = 1000 - margin.left - margin.right;
+      const height = 500 - margin.top - margin.bottom;
+
+      //initialize the scales
+      const xScale = d3.scaleLinear().range([0, width]);
+      const yScale = d3.scaleLinear().range([height, 0]);
+
+      //generate our axis with the scales
+      const xAxis = d3.axisBottom(xScale);
+      const yAxis = d3.axisLeft(yScale);
+
+      //create an svg container with the id chart-container
+      const svg = d3
+        .select("#chart-container")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Add a clipping path to constrain the line and points to the chart area
+      svg
+        .append("defs")
+        .append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Add a title to the x-axis
+      svg
+        .append("text")
+        .attr("id", "x-axis-title")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", "black")
+        .text("Flight ID");
+
+      //adding a title on the y-axis
+      svg
+        .append("text")
+        .attr("id", "y-axis-title")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 20)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", "black")
+        .text("Flight Distance");
+
+      svg
+        .append("g")
+        .attr("class", "x axis")
+        .attr("transform", `translate(0,${height})`);
+      svg.append("g").attr("class", "y axis");
+
+      //create our line path
+      const line = d3
+        .line()
+        .x((d) => xScale(d.id))
+        .y((d) => yScale(d.distance));
+
+      //load the data from the external data file
+      d3.csv("../data/customer_satisfaction.csv").then((data) => {
+        //parse data from our files
+        const parsedData = data.map((d, i) => ({
+          id: i,
+          distance: +d["Flight Distance"],
+          satisfied: d["satisfaction"] === "satisfied",
+        }));
+
+        // Split data by satisfaction
+        const satisfiedData = parsedData.filter((d) => d.satisfied);
+        const notSatisfiedData = parsedData.filter((d) => !d.satisfied);
+
+        //set domains
+        xScale.domain([0, parsedData.length +1]);
+        yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
+
+        //append the satisfied line
+        const satisfiedPath = svg
+          .append("g")
+          .attr("clip-path", "url(#clip)")
+          .append("path")
+          .datum(satisfiedData)
+          .attr("class", "line satisfied")
+          .attr("d", line)
+          .attr("stroke", "green");
+
+        //append the not satisfied line
+        const notSatisfiedPath = svg
+          .append("g")
+          .attr("clip-path", "url(#clip)")
+          .append("path")
+          .datum(notSatisfiedData)
+          .attr("class", "line not-satisfied")
+          .attr("d", line)
+          .attr("stroke", "red");
+
+        //create satisfied points
+        svg
+          .append("g")
+          .attr("clip-path", "url(#clip)")
+          .selectAll(".dot-satisfied")
+          .data(satisfiedData)
+          .join("circle")
+          .attr("class", "dot-satisfied")
+          .attr("cx", (d) => xScale(d.id))
+          .attr("cy", (d) => yScale(d.distance))
+          .attr("r", 5)
+          .attr("fill", "green");
+
+        //create not satisfied points
+        svg
+          .append("g")
+          .attr("clip-path", "url(#clip)")
+          .selectAll(".dot-not-satisfied")
+          .data(notSatisfiedData)
+          .join("circle")
+          .attr("class", "dot-not-satisfied")
+          .attr("cx", (d) => xScale(d.id))
+          .attr("cy", (d) => yScale(d.distance))
+          .attr("r", 5)
+          .attr("fill", "red");
+
+        //append axes
+        svg.select(".x.axis").call(xAxis);
+        svg.select(".y.axis").call(yAxis);
+
+        const zoom = d3
+          .zoom()
+          .scaleExtent([1, 10])
+          .translateExtent([
+            [0, 0],
+            [width, height],
+          ])
+          .on("zoom", zoomed);
+
+        svg
+          .append("rect")
+          .attr("width", width)
+          .attr("height", height)
+          .style("fill", "none")
+          .style("pointer-events", "all")
+          .call(zoom);
+
+        //zoom
+        function zoomed({ transform }) {
+          //rescale x-axis
+          const newXScale = transform.rescaleX(xScale);
+
+          //update axes
+          svg.select(".x.axis").call(xAxis.scale(newXScale));
+
+          //update lines
+          satisfiedPath.attr(
+            "d",
+            d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+          );
+          notSatisfiedPath.attr(
+            "d",
+            d3.line().x((d) => newXScale(d.id)).y((d) => yScale(d.distance))
+          );
+
+          //update points
+          svg
+            .selectAll(".dot-satisfied")
+            .attr("cx", (d) => newXScale(d.id))
+            .attr("cy", (d) => yScale(d.distance));
+          svg
+            .selectAll(".dot-not-satisfied")
+            .attr("cx", (d) => newXScale(d.id))
+            .attr("cy", (d) => yScale(d.distance));
+        }
+      });
+    </script>
+  </body>
+</html>

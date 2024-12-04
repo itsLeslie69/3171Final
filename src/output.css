@@ -704,10 +704,6 @@ tr {
   border-bottom: 1px black solid;
 }
 
-path.domain {
-  opacity: 1;
-}
-
 /* Base Rect styles */
 
 rect {
@@ -720,6 +716,8 @@ rect:hover {
 }
 
 /* Base path styles */
+
+/* Hover effects */
 
 path {
   opacity: 0.8;
@@ -741,35 +739,10 @@ path:hover {
 
 /* Tooltip styles */
 
-.tooltip {
-  position: absolute;
-  background-color: rgb(242, 11, 11);
-  border: 1px solid black;
-  border-radius: 4px;
-  padding: 5px;
-  font-size: 12px;
-  pointer-events: none;
-  display: none;
-}
-
 .toolTipBackground {
   background-color: #36454F;
   border-radius: 10px;
   padding: 5%;
-}
-
-.toolTipTitle {
-  color: white;
-  text-align: center;
-  font-weight: 400;
-  font-size: 1.5rem;
-}
-
-.toolTipText {
-  color: white;
-  text-align: left;
-  margin-left: 5%;
-  font-size: 1rem;
 }
 
 .tipSingleValue {
@@ -778,9 +751,10 @@ path:hover {
   font-size: 1rem;
 }
 
-.axis-label {
-  font-size: 1.2rem;
-  font-weight: 500;
+/* Graph axis text */
+
+g.tick text {
+  font-size: 0.8rem;
 }
 
 @media (min-width: 640px) {

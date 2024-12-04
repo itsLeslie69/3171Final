@@ -1,8 +1,20 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"
 
-export default async function returnCheckIn() {
-    const data = await d3.csv('/data/customer_satisfaction.csv');
+  //fetching customer_satisfaction.csv
+      //making sure our directory path is correct
+      const csvPath = "../../data/customer_satisfaction.csv";
+      fetch(csvPath)
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(`Failed to fetch FOR checkin.js: ${response.statusText}`);
+          return response.text();
+        })
+        .then((data) => console.log("checkin.js csv data successfully recieved: " + data))
+        .catch((error) => console.error(error));
 
+
+export default async function returnCheckIn() {
+    const data = await d3.csv('../../../data/customer_satisfaction.csv');
     const oneStar = data.filter((record) => record["Checkin service"] == 1).length;
     const twoStar = data.filter((record) => record["Checkin service"] == 2).length;
     const threeStar = data.filter((record) => record["Checkin service"] == 3).length;

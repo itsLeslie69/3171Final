@@ -2,11 +2,11 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export default function renderFlightDistanceChart() {
   //setting dimensions and margins
-  const margin = { top: 20, right: 30, bottom: 50, left: 70 };
-  const width = 500 - margin.left - margin.right;
+  const margin = { top: 20, right: 30, bottom: 50, left: 100 };
+  const width = 1000 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
-  const xScale = d3.scaleLinear().range([0, width ]);
+  const xScale = d3.scaleLinear().range([0, width]);
   const yScale = d3.scaleLinear().range([height, 0]);
 
   const xAxis = d3.axisBottom(xScale);

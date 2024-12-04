@@ -3,41 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../src/output.css">
-    <title>Star Air Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Dashboard</title>
 </head>
-<body>
-     <div class="contentContainer grid min-[640]:grid-cols-1 lg:grid-cols-12 w-full gap-4 pr-5 pl-5">
-        <!--1st Row-->
-        <div class="lg:col-span-3 lg:col-start-3 lg:row-span-1 sm:col-span-1 flex flex-col justify-center items-center gap-2 bg-[#D3D3D3] bg-opacity-70 rounded-lg p-5">
-            <div id="q7Container" class="#BBA79C bg-opacity-50 min-h-[8rem] w-[20rem] rounded-lg p-5 shadow-2xl flex flex-col justify-center items-center">
-                <p>Loyal Customers</p>
-                <h3 id="q7Figure"></h3>
+<body class="min-h-screen bg-gray-100 overflow-auto">
+    <div class="flex flex-wrap px-4 justify-center py-4 gap-5 max-w-8xl mx-auto">
+        <!-- Outline (spanning one column) -->
+        <div class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/3">
+            <h2 class="text-lg font-semibold mb-4">Outline</h2>
+            <div id="q7Container" class="bg-gray-400 rounded-lg text-center p-8 mb-4">
+                <p>Loyal Customers</p>                
+                <p id="q7Figure" class="text-xl font-bold">0</p>
             </div>
-            <div id="q8Container" class="#BBA79C bg-opacity-50 min-h-[8rem] w-[20rem] rounded-lg p-5 shadow-2xl flex flex-col justify-center items-center">
+            <div id="q8Container" class="bg-gray-400 rounded-lg text-center p-8 mb-4">
                 <p>Total Flown</p>
-                <h3 id="q8Figure"></h3>
+                <p id="q8Figure" class="text-xl font-bold">0</p>
             </div>
-            <div id="q9Container" class="#BBA79C bg-opacity-50 min-h-[8rem] w-[19rem] rounded-lg p-5 shadow-2xl flex flex-col justify-center items-center">
+            <div id="q9Container" class="bg-gray-400 rounded-lg text-center p-8">
                 <p>Cust. With No Delays</p>
-                <h3 id="q9Figure"></h3>
+                <p id="q9Figure" class="text-xl font-bold">0</p>
             </div>
         </div>
-        <!--2nd Row-->
-        <div id="q1Container" class="lg:col-span-4 lg:max-h-[28rem]  sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
 
-        <div id="q2Container" class="lg:col-span-3 lg:row-start-2 lg:col-start-2 lg:max-h-[28rem] sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
+        <!-- q1Container -->
+        <div id="q1Container" class="bg-gray-300 rounded-md shadow-md  h-[4000px] p-10"></div>
 
-        <div id="q4Container" class="lg:col-span-3 lg:row-start-2  lg:max-h-[28rem] sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
 
-        <div id="q5Container" class="lg:col-span-3 lg:row-start-2  lg:max-h-[28rem] sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
-        <!--3rd Row-->
-        <div id="q6Container" class="lg:col-span-3 lg:row-start-3 lg:col-start-3 lg:max-h-[25rem] sm:col-span-1 rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
 
-        <div id="q3Container" class="lg:col-span-3 lg:row-start-3 lg:max-h-[25rem] sm:col-span-1  rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 p-5"></div>
-        <div class="q3SelectContainer rounded-lg shadow-md bg-[#D3D3D3] bg-opacity-70 lg:max-h-[8rem] lg:col-span-2 lg:row-start-3 p-5">
-            <p class="mb-2">Select Satisfaction:</p>
-            <select name="graphs" id="dropDown">
+        
+        <!-- q2Container -->
+        <div id="q2Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
+
+        <!-- q4Container -->
+        <div id="q4Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
+
+
+        
+        <!-- q5Container -->
+        <div id="q5Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
+
+        <!-- q6Container -->
+        <div id="q6Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4"></div>
+
+        <!-- q3Container -->
+        <div id="q3Container" class="bg-gray-300 rounded-lg shadow-md p-5 w-full md:w-1/4">
+            <select name="graphs" id="dropDown" class="w-full p-2 border rounded-lg">
                 <option value="select">Select Graph</option>
                 <option value="checkIn">Check-in</option>
                 <option value="booking">Ease of Booking</option>
@@ -47,29 +57,36 @@
             </select>
         </div>
     </div>
-
 </body>
 </html>
 <script type="module">
-   // Imports
-    // Helper Functions
-    import appendSingleFigure from "./utilities/appendSingleFigure.js"
-    // Single Figures
-    import returnLoyalCustomers from "./graphs/singleFigures/q7.js"
-    import returnTotalFlightDist from "./graphs/singleFigures/q8.js"
-    import returnNoDelayCust from "./graphs/singleFigures/q9.js"
-    
-    // Graphs are JS files that simply append the appropriate graph
-    // to a selected div with an ID for that graph
-    import getGraph1 from "./graphs/graphFunctions/q1.js"
-    import getGraph2 from "./graphs/graphFunctions/q2.js"
-    import getGraph3 from "./graphs/graphFunctions/q3.js"
-    import getGraph4 from "./graphs/graphFunctions/q4.js"
-    import getGraph5 from "./graphs/graphFunctions/q5.js"
-    import getGraph6 from "./graphs/graphFunctions/q6.js"
-    
-    // Promises to handle single figures
-    returnLoyalCustomers().then((res) => {
+  const csvPath = "../data/customer_satisfaction.csv";
+  fetch(csvPath)
+    .then((response) => {
+      if (!response.ok)
+        throw new Error(`Failed to fetch FOR index.html: ${response.statusText}`);
+      return response.text();
+    })
+    .then((data) => console.log("index.html csv data successfully received: " + data))
+    .catch((error) => console.error(error));
+
+  import appendSingleFigure from "./utilities/appendSingleFigure.js"
+  import returnLoyalCustomers from "./graphs/singleFigures/q7.js"
+  import returnTotalFlightDist from "./graphs/singleFigures/q8.js"
+  import returnNoDelayCust from "./graphs/singleFigures/q9.js"
+
+  import getGraph1 from "./graphs/graphFunctions/q1.js"
+  import getGraph2 from "./graphs/graphFunctions/q2.js"
+  import getGraph3 from "./graphs/graphFunctions/q3.js"
+  import getGraph4 from "./graphs/graphFunctions/q4.js"
+  import getGraph5 from "./graphs/graphFunctions/q5.js"
+  import getGraph6 from "./graphs/graphFunctions/q6.js"
+
+  var loyalNum = await returnLoyalCustomers()
+  var totalDistFlown = await returnTotalFlightDist()
+  var noDelayNum = await returnNoDelayCust()
+
+  returnLoyalCustomers().then((res) => {
         document.getElementById('q7Figure').innerHTML = res
     })
 
@@ -83,10 +100,12 @@
         document.getElementById('q9Figure').innerHTML = res
     })
 
-    getGraph1()
-    getGraph2()
-    getGraph3()
-    getGraph4()
-    getGraph5()
-    getGraph6()
+  getGraph1()
+  getGraph2()
+  getGraph3()
+  getGraph4()
+  getGraph5()
+  getGraph6()
 </script>
+
+

@@ -1,26 +1,22 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import { appendToolTip } from "../../utilities/toolTips.js";
 
-
-
 export default function getGraph6 () {
+    // Defining chart dimensions
     var width = 500 
     var height = 500
 
-    var padding = 100
+    var padding = 110
 
     var innerWidth = width - padding
     var innerHeight = height - padding
-
+    // Array for graph colours
     var color = ["#54433A", "#F58634", "#008970", "#00C0A3"]
-
     // Appending svg
     var graph = d3.select('#q6Container')
                     .append('svg')
-/*                     .attr('height', height)
-                    .attr('width', width) */
                     .attr('id', 'q6SVG')
-                    .attr('viewBox',
+                    .attr('viewBox',    // Making graph responsive
                         "0 0 " + width + " " + height
                     )
     
@@ -35,14 +31,13 @@ export default function getGraph6 () {
 
     // Appending group container to svg
     var graphGroup = graph.append('g')
-                            .attr("transform", "translate(50, 10)")
+                            .attr("transform", "translate(60, 10)")
     
     d3.csv('../data/customer_satisfaction.csv').then((data) => {
-
+        // Getting first 15 customers from CSV directly
         var disloyalArray = data.slice(0, 15)
-    
+        // Creating groups based on the ids
         var groups = data.map(d => Number(d.id)).slice(0, 15)
-
         // Creating axes and axis scales
         var xScale = d3.scaleBand()
                         .domain(groups)
@@ -51,7 +46,7 @@ export default function getGraph6 () {
 
         var xAxis = d3.axisBottom()
                         .scale(xScale)
-
+        // Calling axes
         graphGroup.append('g')
                     .attr('transform', 'translate(0,' + innerHeight + ")") 
                     .call(xAxis)
@@ -75,10 +70,8 @@ export default function getGraph6 () {
         graphGroup.append("text")
             .attr("class", "axis-label")
             .attr("text-anchor", "middle")
-            .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
+            .attr("transform", `translate(${-48},${innerHeight / 2})rotate(-90)`)
             .text("Total Ticket(s) Cost");    
-            
-
 
         // Graphing data
         graphGroup.append('g')
@@ -99,7 +92,7 @@ export default function getGraph6 () {
             .join('rect')
             .on('mouseover', function (event, d) {
 
-                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(2), 0, -90, "Cost")
+                appendToolTip(graph, xScale(parseInt(d.id)), this.y.baseVal.value, d, 0, "$" + Number(d.price).toFixed(0), 50, -50, "Cost")
             }).on('mouseout', function () {
                 d3.selectAll('.toolTip').remove()
             })
@@ -118,61 +111,33 @@ export default function getGraph6 () {
                 return "_" + color[i].slice(1) + " bar"
             })
            
+            // Legend
+            const legend = graphGroup.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${250}, 20)`);
 
-        // Legend
-        const legend = graphGroup.append("g")
-        .attr("class", "legend")
-        .attr("transform", `translate(${250}, 20)`);
-
-        ["1st Ticket Price", "2nd Ticket Price", "3rd Ticket Price", "4th Ticket Price"].forEach((s, v) => {
-            const legendRow = legend.append("g")
-                .attr("transform", `translate(0, ${v * 20})`)
-                .on('mouseover', function () {
-                    d3.select('#q6SVG').selectAll('.' + '_' + color[v].slice(1)).transition()
+            ["1st Ticket Price", "2nd Ticket Price", "3rd Ticket Price", "4th Ticket Price"].forEach((s, v) => {
+                const legendRow = legend.append("g")
+                    .attr("transform", `translate(0, ${v * 20})`)
+                    .on('mouseover', function () {
+                        d3.select('#q6SVG').selectAll('.' + '_' + color[v].slice(1)).transition()
+                            .duration(50)
+                            .style('opacity', 1)
+                    }).on('mouseout', function () {
+                        d3.select('#q6SVG').selectAll('.' + '_' + color[v].slice(1)).transition()
                         .duration(50)
-                        .style('opacity', 1)
-                }).on('mouseout', function () {
-                    d3.select('#q6SVG').selectAll('.' + '_' + color[v].slice(1)).transition()
-                    .duration(50)
-                    .style('opacity', 0.8)
-                })
+                        .style('opacity', 0.8)
+                    })
 
-            legendRow.append("rect")
-                .attr("width", 15)
-                .attr("height", 15)
-                .attr("fill", (d, i) => color[v]);
+                legendRow.append("rect")
+                    .attr("width", 15)
+                    .attr("height", 15)
+                    .attr("fill", (d, i) => color[v]);
 
-            legendRow.append("text")
-                .attr("x", 20)
-                .attr("y", 12)
-                .text(s);
+                legendRow.append("text")
+                    .attr("x", 20)
+                    .attr("y", 12)
+                    .text(s);
         });
-
-
-/*             // Brush handler functions
-            function updateChart (event) {
-                var selection = event.selection
-    
-                d3.select('#q6SVG').selectAll('.bar').classed("selected", function (d) {
-                    console.log(d)
-                    return isBrushed (selection, xScale(parseInt(d.id)) + 50, yScale(parseFloat(d.price)) + 50)
-                })
-    
-            }
-    
-            function isBrushed (edge, x, y) {
-                var x0 = edge[0][0],
-                    x1 = edge[1][0],
-                    y0 = edge[0][1],
-                    y1 = edge[1][1]
-                    return x0 <= x && x1 >= x && y0 <= y && y1 >= y 
-            }
-    
-            // Calling brush
-            d3.select('#q6SVG').call(
-                d3.brush()
-                    .extent([[0, 0], [500, 500]])
-                    .on('start brush', updateChart)
-            )     */
     })
 }
