@@ -13,15 +13,6 @@ export default function renderFlightDistanceChart() {
   const yAxis = d3.axisLeft(yScale);
 
   
-  //add title
-  svg
-    .append("text")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", margin.top)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "24px")
-    .attr("font-weight", "bold")
-    .text("Flight Distances");
   
   const svg = d3
     .select("#q1Container")
@@ -38,7 +29,17 @@ export default function renderFlightDistanceChart() {
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`)
     .attr("clip-path", "url(#clip)");
-
+  
+  //add title
+  svg
+    .append("text")
+    .attr("x", (width + margin.left + margin.right) / 2)
+    .attr("y", margin.top)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "24px")
+    .attr("font-weight", "bold")
+    .text("Flight Distances");
+  
   //add a clipping path
   focus
     .append("defs")
