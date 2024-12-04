@@ -104,7 +104,7 @@ export default function renderFlightDistanceChart() {
     const notSatisfiedData = parsedData.filter((d) => !d.satisfied);
 
     xScale.domain([0, parsedData.length + 1]);
-    yScale.domain([0, d3.max(parsedData, (d) => d.distance)]);
+    yScale.domain([0, d3.max(parsedData, (d) => d.distance+100)]);
 
     //the green path (satisfied)
     const satisfiedPath = focus
