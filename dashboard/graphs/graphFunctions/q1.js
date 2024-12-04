@@ -17,9 +17,6 @@ export default function renderFlightDistanceChart() {
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-/*     .attr('viewBox',
-        "0 0 " + Number(width + margin.left + margin.right) + " " + Number(height + margin.top + margin.bottom)
-    ) */
 
   //adding groups for axes and zoomable area
   const axesGroup = svg

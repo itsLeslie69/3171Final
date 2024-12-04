@@ -33,10 +33,12 @@ export function appendToolTip (container, xPos, height, dataParam, reverseValue 
         tooltipDiv.append('div')
         .attr('class', 'toolTipText')
         .attr('class', 'tipSingleValue')
+        .style('font-weight', '500')
         .text(fieldText + ": " + singleField)
     } else {
         tooltipDiv.append('div')
         .attr('class', 'toolTipText')
+        .style('font-weight', '500')
         .attr('class', 'tipSingleValue')
         .text(singleField)  // Otherwise, just the given field is displayed
     }                               

@@ -24,7 +24,7 @@ export default function getGraph5 () {
 
     // Appending group container to svg
     var graphGroup = graph.append('g')
-        .attr("transform", "translate(50, 50)")
+        .attr("transform", "translate(65, 50)")
    
     d3.csv('../data/customer_satisfaction.csv').then((d) => {
         // Getting classes
@@ -127,7 +127,7 @@ export default function getGraph5 () {
         graphGroup.append("text")
             .attr("class", "axis-label")
             .attr("text-anchor", "middle")
-            .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
+            .attr("transform", `translate(${-45},${innerHeight / 2})rotate(-90)`)
             .text("Passenger Satisfaction");      
             
         //Title

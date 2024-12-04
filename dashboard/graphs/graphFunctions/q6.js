@@ -31,7 +31,7 @@ export default function getGraph6 () {
 
     // Appending group container to svg
     var graphGroup = graph.append('g')
-                            .attr("transform", "translate(60, 10)")
+                            .attr("transform", "translate(65, 10)")
     
     d3.csv('../data/customer_satisfaction.csv').then((data) => {
         // Getting first 15 customers from CSV directly

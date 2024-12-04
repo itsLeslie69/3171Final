@@ -19,7 +19,7 @@ export default function getGraph4 () {
         )
         // Group element to store all graph elements with an offset
         var graphGroup = svg.append('g')
-            .attr("transform", "translate(50, 50)")
+            .attr("transform", "translate(65, 50)")
 
        // Load and process CSV data
        d3.csv("../data/customer_satisfaction.csv").then((data) => {
