@@ -12,6 +12,17 @@ export default function renderFlightDistanceChart() {
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
 
+  
+  //add title
+  svg
+    .append("text")
+    .attr("x", (width + margin.left + margin.right) / 2)
+    .attr("y", margin.top)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "24px")
+    .attr("font-weight", "bold")
+    .text("Flight Distances");
+  
   const svg = d3
     .select("#q1Container")
     .append("svg")
