@@ -33,20 +33,20 @@ export default function getGraph6() {
     .attr("font-weight", "bold")
     .text("First 15 Disloyal Customers 4 ticket prices");
 
-  // Appending group container to svg
-  var graphGroup = graph.append("g").attr("transform", "translate(60, 10)");
-
-  d3.csv("../data/customer_satisfaction.csv").then((data) => {
-    // Getting first 15 customers from CSV directly
-    var disloyalArray = data.slice(0, 15);
-    // Creating groups based on the ids
-    var groups = data.map((d) => Number(d.id)).slice(0, 15);
-    // Creating axes and axis scales
-    var xScale = d3
-      .scaleBand()
-      .domain(groups)
-      .range([0, innerWidth])
-      .padding([0.2]);
+    // Appending group container to svg
+    var graphGroup = graph.append('g')
+                            .attr("transform", "translate(60, 10)")
+    
+    d3.csv('../data/customer_satisfaction.csv').then((data) => {
+        // Getting first 15 customers from CSV directly
+        var disloyalArray = data.slice(0, 15)
+        // Creating groups based on the ids
+        var groups = data.map(d => Number(d.id)).slice(0, 15)
+        // Creating axes and axis scales
+        var xScale = d3.scaleBand()
+                        .domain(groups)
+                        .range([0, innerWidth])
+                        .padding([0.2])
 
     var xAxis = d3.axisBottom().scale(xScale);
     // Calling axes

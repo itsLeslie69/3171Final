@@ -24,31 +24,32 @@ export default function getGraph5() {
       "0 0 " + width + " " + height
     );
 
-  // Appending group container to svg
-  var graphGroup = graph.append("g").attr("transform", "translate(50, 50)");
-
-  d3.csv("../data/customer_satisfaction.csv").then((d) => {
-    // Getting classes
-    var seatClasses;
-    // Function to get the seat classes
-    function getClasses() {
-      let tempArray = [];
-      for (let i = 0; i < d.length; i++) {
-        tempArray.push(d[i].Class);
-      }
-      // Converting the array to a Set data type as it does not allow for duplicate values
-      let outputArray = Array.from(new Set(tempArray)); // Convering back to Array data type from Set on same line
-      return outputArray; // Returning final array
-    }
-
-    seatClasses = getClasses(); // Storing the classes
-
-    // Making new array with ratings grouped by satisfaction
-    var groupedData = []; // Variable to store the classes and raw values
-    // Simple for loops are used to push values
-    for (let i = 0; i < seatClasses.length; i++) {
-      groupedData.push([seatClasses[i]]); // Seats pushed as arrays into groupedData to make 3 sub-arrays
-    }
+    // Appending group container to svg
+    var graphGroup = graph.append('g')
+        .attr("transform", "translate(50, 50)")
+   
+    d3.csv('../data/customer_satisfaction.csv').then((d) => {
+        // Getting classes
+        var seatClasses
+        // Function to get the seat classes
+        function getClasses () {
+            let tempArray = []
+            for (let i = 0; i < d.length; i++) {
+                tempArray.push(d[i].Class)
+            }
+            // Converting the array to a Set data type as it does not allow for duplicate values
+            let outputArray = Array.from(new Set(tempArray)) // Convering back to Array data type from Set on same line
+            return outputArray // Returning final array
+        }
+   
+        seatClasses = getClasses()  // Storing the classes
+   
+        // Making new array with ratings grouped by satisfaction
+        var groupedData = []    // Variable to store the classes and raw values
+        // Simple for loops are used to push values
+        for (let i = 0; i < seatClasses.length; i++) {
+            groupedData.push([seatClasses[i]])  // Seats pushed as arrays into groupedData to make 3 sub-arrays
+        }
 
     for (let i = 0; i < d.length; i++) {
       for (let z = 0; z < seatClasses.length; z++) {
@@ -118,12 +119,27 @@ export default function getGraph5() {
 
     var createYaxis = graphGroup.append("g").call(yAxis);
 
-    // Labels
-    graphGroup
-      .append("text")
-      .attr("class", "axis-label")
-      .attr("x", innerWidth / 2)
-      .attr("y", 440)
+        // Labels
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("x", innerWidth / 2)
+            .attr("y", 440)
+            .attr("text-anchor", "middle")
+            .text("Class Flown");
+
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("text-anchor", "middle")
+            .attr("transform", `translate(${-35},${innerHeight / 2})rotate(-90)`)
+            .text("Passenger Satisfaction");      
+            
+        //Title
+        graphGroup.append("text")
+            .attr("class", "axis-label")
+            .attr("x", innerWidth / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            .text("Passenger Satisfaction by Class");
 
         graphGroup.append('g')
         .selectAll('g')

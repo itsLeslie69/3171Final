@@ -11,14 +11,15 @@ export default function getGraph4() {
   // Array for graph colours
   var color = ["#54433A", "#F58634", "#008970", "#00C0A3"];
 
-  // Add SVG
-  var svg = d3
-    .select("#q4Container")
-    .append("svg")
-    .attr("id", "q4SVG")
-    .attr("viewBox", "0 0 " + width + " " + height);
-  // Group element to store all graph elements with an offset
-  var graphGroup = svg.append("g").attr("transform", "translate(50, 50)");
+        // Add SVG
+        var svg = d3.select("#q4Container").append("svg")
+        .attr('id', 'q4SVG')
+        .attr('viewBox',
+            "0 0 " + width + " " + height
+        )
+        // Group element to store all graph elements with an offset
+        var graphGroup = svg.append('g')
+            .attr("transform", "translate(65, 50)")
 
   // Load and process CSV data
   d3.csv("../data/customer_satisfaction.csv").then((data) => {

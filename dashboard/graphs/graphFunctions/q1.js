@@ -12,11 +12,13 @@ export default function renderFlightDistanceChart() {
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
 
+  
+  
   const svg = d3
     .select("#q1Container")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("height", height + margin.top + margin.bottom)
 
   //add title
   svg
@@ -37,7 +39,17 @@ export default function renderFlightDistanceChart() {
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`)
     .attr("clip-path", "url(#clip)");
-
+  
+  //add title
+  svg
+    .append("text")
+    .attr("x", (width + margin.left + margin.right) / 2)
+    .attr("y", margin.top)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "24px")
+    .attr("font-weight", "bold")
+    .text("Flight Distances");
+  
   //add a clipping path
   focus
     .append("defs")
@@ -85,10 +97,10 @@ export default function renderFlightDistanceChart() {
   const tooltip = d3
     .select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .attr('class', 'toolTipBackground')
     .style("position", "absolute")
-    .style("background-color", "white")
-    .style("border", "1px solid black")
+
+
     .style("border-radius", "5px")
     .style("padding", "10px")
     .style("pointer-events", "none")
@@ -111,16 +123,15 @@ export default function renderFlightDistanceChart() {
     const satisfiedPath = focus
       .append("path")
       .datum(satisfiedData)
-      .attr("class", "line satisfied")
+      .attr("class", "line-satisfied")
       .attr("d", line)
-      .attr("stroke", "green")
       .attr("fill", "none");
 
     //the red path (not satisfied)
     const notSatisfiedPath = focus
       .append("path")
       .datum(notSatisfiedData)
-      .attr("class", "line not-satisfied")
+      .attr("class", "line-not-satisfied")
       .attr("d", line)
       .attr("stroke", "red")
       .attr("fill", "none");
@@ -132,8 +143,8 @@ export default function renderFlightDistanceChart() {
       .attr("class", "dot-satisfied")
       .attr("cx", (d) => xScale(d.id))
       .attr("cy", (d) => yScale(d.distance))
-      .attr("r", 2)
-      .attr("fill", "green")
+      .attr("r", 5)
+      
       .on("mouseover", function (event, d) {
         tooltip
           .style("opacity", 1)
