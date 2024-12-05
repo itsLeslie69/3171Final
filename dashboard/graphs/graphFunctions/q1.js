@@ -84,10 +84,10 @@ export default function renderFlightDistanceChart() {
   const tooltip = d3
     .select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .attr('class', 'toolTipBackground')
     .style("position", "absolute")
-    .style("background-color", "white")
-    .style("border", "1px solid black")
+
+
     .style("border-radius", "5px")
     .style("padding", "10px")
     .style("pointer-events", "none")
@@ -110,16 +110,15 @@ export default function renderFlightDistanceChart() {
     const satisfiedPath = focus
       .append("path")
       .datum(satisfiedData)
-      .attr("class", "line satisfied")
+      .attr("class", "line-satisfied")
       .attr("d", line)
-      .attr("stroke", "green")
       .attr("fill", "none");
 
     //the red path (not satisfied)
     const notSatisfiedPath = focus
       .append("path")
       .datum(notSatisfiedData)
-      .attr("class", "line not-satisfied")
+      .attr("class", "line-not-satisfied")
       .attr("d", line)
       .attr("stroke", "red")
       .attr("fill", "none");
@@ -132,7 +131,7 @@ export default function renderFlightDistanceChart() {
       .attr("cx", (d) => xScale(d.id))
       .attr("cy", (d) => yScale(d.distance))
       .attr("r", 5)
-      .attr("fill", "green")
+      
       .on("mouseover", function (event, d) {
         tooltip
           .style("opacity", 1)
